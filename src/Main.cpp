@@ -439,7 +439,7 @@ main (int argc, char **argv)
 		{
 		  beamFile << (i + 1) << endl;
 		  beamFile << "Source : " << sourceSentences[i] << endl;
-		  beamFile << "Target : " << vouts[i][bestTransInds[i].first] << endl;
+		  beamFile << "Target : " << vtransfers[i][bestTransInds[i].first] << endl;
 		  if (bestTransInds[i].second == 0)
 		    beamFile << "Weight : " << 1 << endl;
 		  else
