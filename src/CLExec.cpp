@@ -108,10 +108,11 @@ CLExec::transfer (string inFilePath, string outFilePath)
       string ("apertium-transfer -n")
 	  + string (" $HOME/apertium-kaz-tur/apertium-kaz-tur.kaz-tur.t4x")
 	  + string (" $HOME/apertium-kaz-tur/kaz-tur.t4x.bin ") + inFilePath
-	  + string (" | lt-proc -g $HOME/apertium-kaz-tur/kaz-tur.autogen.bin ")
-	  + string (" | lt-proc -p $HOME/apertium-kaz-tur/kaz-tur.autopgen.bin ")
+	  + string (" | lt-proc -g $HOME/apertium-kaz-tur/kaz-tur.autogen.bin")
+	  + string (" | lt-proc -p $HOME/apertium-kaz-tur/kaz-tur.autopgen.bin")
 	  + string (" >") + outFilePath);
 }
+
 void
 CLExec::assignWeights (string inFilePath, string outFilePath)
 {
@@ -367,24 +368,23 @@ CLExec::beamSearch (
       vector<vector<xml_node> > ambigRules = p.second.second;
       unsigned ambigRulesSize = ambigRules.size ();
 
-      // name of the file is the concatenation of patterns
-      string patterns;
-      for (unsigned x = 0; x < ambigRulesSize; x++)
+      // name of the file is the concatenation of rules ids
+      string rulesNums;
+      for (unsigned x = 0; x < ambigRules.size (); x++)
 	{
 	  for (unsigned y = 0; y < ambigRules[x].size (); y++)
 	    {
-	      xml_node pattern = ambigRules[x][y].child (PATTERN);
-	      for (xml_node item = pattern.child (PATTERN_ITEM); item;
-		  item = item.next_sibling ())
-		{
-		  patterns += item.attribute (N).value ();
-		  patterns += "_";
-		}
+	      xml_node rule = ambigRules[x][y];
+	      string ruleCmnt = rule.first_attribute ().value ();
+
+	      rulesNums += ruleCmnt.substr (ruleCmnt.find_last_of ("-") + 1);
+	      rulesNums += "_";
+
 	    }
-	  patterns += "+";
+	  rulesNums += "+";
 	}
 
-      map<string, vector<float> > classWeights = classesWeights[(patterns + ".model")];
+      map<string, vector<float> > classWeights = classesWeights[(rulesNums + ".model")];
 
       // build new tree for the new words
       vector<pair<vector<unsigned>, float> > newTree;
@@ -435,7 +435,7 @@ CLExec::beamSearch (
 	    {
 	      for (unsigned z = 0; z < ambigRulesSize; z++)
 		newTree[z].second += 1;
-	      cout << "word : " << word << "  is not found in dataset : " << patterns
+	      cout << "word : " << word << "  is not found in dataset : " << rulesNums
 		  << endl;
 	    }
 

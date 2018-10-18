@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <sys/time.h>
+#include <sstream>
 
 #include "../pugixml/pugixml.hpp"
 #include "RuleParser.h"
@@ -25,22 +26,34 @@ using namespace pugi;
 using namespace elem;
 
 int
-main (void)
+main (int argc, char **argv)
 {
+  string inFilePath = "wiki.txt", preProcessFilePath = "preProcess.txt",
+      sentenceFilePath = "sentences.txt", biltransFilePath = "biltrans.txt",
+      lextorFilePath = "lextor.txt", outputFilePath = "default.out", interInFilePath =
+	  "interchunkIn.txt", interOutFilePath = "interchunkOut.txt", postOutFilePath =
+	  "postchunkOut.txt", transferOutFilePath = "transferOut.txt", weightOutFilePath =
+	  "weightOut.txt", beamFilePath = "beamResults.txt";
 
-  string inFilePath, preProcessFilePath = "preProcess.txt", sentenceFilePath =
-      "sentences.txt", biltransFilePath = "biltrans.txt", lextorFilePath = "lextor.txt",
-      outputFilePath = "default.out", interInFilePath = "interchunkIn.txt",
-      interOutFilePath = "interchunkOut.txt", postOutFilePath = "postchunkOut.txt",
-      transferOutFilePath = "transferOut.txt", weightOutFilePath = "weightOut.txt",
-      beamFilePath = "beamResults.txt";
+  if (argc > 2)
+    {
+      inFilePath = argv[1];
+      outputFilePath = argv[2];
+      if (argc == 3)
+	cout << "Yasmet training mode" << endl;
+      else if (argc == 4)
+	cout << "Beam search mode" << endl;
+    }
+  else
+    {
+      cout << "Error!! Please pass at least two arguments , input and output." << endl;
+      return -1;
+    }
 
-  cout << "Please enter the corpus file path : " << endl;
-  cin >> inFilePath;
-  cout << "Please enter the output file path : " << endl;
-  cin >> outputFilePath;
+  cout << "Input file : " << inFilePath << endl;
+  cout << "Output file : " << outputFilePath << endl;
 
-  // start timer
+// start timer
   struct timeval stop, start;
   gettimeofday (&start, NULL);
 
@@ -53,12 +66,16 @@ main (void)
   if (inFile.is_open () && preProcessFile.is_open ())
     {
       string line;
+      string latin = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
       while (getline (inFile, line))
 	{
 	  // remove double quotes
 	  for (unsigned i = 0; i < line.size (); i++)
 	    {
-	      if (line[i] == '"')
+	      if (line[i] == '"' || line[i] == '[' || line[i] == ']' || line[i] == '{'
+		  || line[i] == '}' || line[i] == '<' || line[i] == '>' || line[i] == '('
+		  || line[i] == ')' || line[i] == '/' || line[i] == '|' || line[i] == '\\'
+		  || line[i] == '$')
 		{
 		  line.erase (i, 1);
 		  i--;
@@ -74,7 +91,7 @@ main (void)
     {
       cout << "No file found!" << endl;
     }
-  cout << "Pre-process corpus started" << endl;
+  cout << "Pre-process corpus finished" << endl;
 
   cout << "Breaking corpus into sentences started" << endl;
 // then segment the line by sentences
@@ -91,13 +108,10 @@ main (void)
   CLExec::lextor (biltransFilePath, lextorFilePath);
   cout << "Lextor of all sentences finished" << endl;
 
+  cout << "Sentences Analysis started" << endl;
   ifstream lextorFile (lextorFilePath.c_str ());
   ifstream inSentenceFile (sentenceFilePath.c_str ());
-  ofstream outputFile (outputFilePath.c_str ());
-//  ofstream beamFile (beamFilePath.c_str ());
-
-  if (lextorFile.is_open () && outputFile.is_open () && inSentenceFile.is_open ())
-//      && beamFile.is_open ())
+  if (lextorFile.is_open () && inSentenceFile.is_open ())
     {
 
       // load transfer file in an xml document object
@@ -113,13 +127,8 @@ main (void)
       // xml node of the parent node (transfer) in the transfer file
       xml_node transfer = transferDoc.child ("transfer");
 
-      // load yasmet models data
-//      map<string, map<string, vector<float> > > classesWeights =
-//	  CLExec::loadYasmetModels ();
-
       vector<string> sourceSentences, tokenizedSentences;
 
-//      long sentId = 1;
       string tokenizedSentence;
       while (getline (lextorFile, tokenizedSentence))
 	{
@@ -127,25 +136,21 @@ main (void)
 	  if (!getline (inSentenceFile, sourceSentence))
 	    sourceSentence = "No more sentences";
 
-//	  cout << sentId++ << endl;
-//	  cout << "source : " << sourceSentence << endl;
-//	  cout << "lextor : " << tokenizedSentence << endl;
-
 	  sourceSentences.push_back (sourceSentence);
 	  tokenizedSentences.push_back (tokenizedSentence);
 	}
-
       lextorFile.close ();
       inSentenceFile.close ();
 
-      vector<string> vslTokens[sourceSentences.size ()];
-      vector<string> vouts[sourceSentences.size ()];
-      vector<vector<unsigned> > vrulesIds[sourceSentences.size ()];
-      vector<vector<vector<xml_node> > > voutsRules[sourceSentences.size ()];
-      vector<pair<pair<unsigned, unsigned>, pair<unsigned, vector<vector<xml_node> > > > > vambigInfo[sourceSentences.size ()];
-      vector<vector<unsigned> > vweigInds[sourceSentences.size ()];
+      vector<vector<string> > vslTokens;
+      vector<vector<string> > vouts;
+      vector<vector<vector<unsigned> > > vrulesIds;
+      vector<vector<vector<vector<xml_node> > > > voutsRules;
+      vector<
+	  vector<
+	      pair<pair<unsigned, unsigned>, pair<unsigned, vector<vector<xml_node> > > > > > vambigInfo;
+      vector<vector<vector<unsigned> > > vweigInds;
 
-//#pragma omp parallel for
       for (unsigned i = 0; i < sourceSentences.size (); i++)
 	{
 	  string sourceSentence, tokenizedSentence;
@@ -206,12 +211,12 @@ main (void)
 
 	  RuleExecution::weightIndices (&weigInds, ambigInfo, outsRules);
 
-	  vslTokens[i] = slTokens;
-	  vouts[i] = outs;
-	  vrulesIds[i] = rulesIds;
-	  voutsRules[i] = outsRules;
-	  vambigInfo[i] = ambigInfo;
-	  vweigInds[i] = weigInds;
+	  vslTokens.push_back (slTokens);
+	  vouts.push_back (outs);
+	  vrulesIds.push_back (rulesIds);
+	  voutsRules.push_back (outsRules);
+	  vambigInfo.push_back (ambigInfo);
+	  vweigInds.push_back (weigInds);
 	}
 
       ofstream interInFile (interInFilePath.c_str ());
@@ -227,14 +232,23 @@ main (void)
       else
 	cout << "error in opening interInFile" << endl;
       interInFile.close ();
+      cout << "Sentences Analysis finished" << endl;
 
+      cout << "Interchunk started" << endl;
       CLExec::interchunk (interInFilePath, interOutFilePath);
+      cout << "Interchunk finished" << endl;
 
+      cout << "Postchunk started" << endl;
       CLExec::postchunk (interOutFilePath, postOutFilePath);
+      cout << "Postchunk finished" << endl;
 
+      cout << "Transfer started" << endl;
       CLExec::transfer (postOutFilePath, transferOutFilePath);
+      cout << "Transfer finished" << endl;
 
+      cout << "Model scoring started" << endl;
       CLExec::assignWeights (transferOutFilePath, weightOutFilePath);
+      cout << "Model scoring finished" << endl;
 
       vector<string> vtransfers[sourceSentences.size ()];
 
@@ -275,7 +289,9 @@ main (void)
 		sum += weight;
 	      }
 	    for (unsigned j = 0; j < outs.size (); j++)
+	      {
 		weights[j] /= sum;
+	      }
 
 	    vweights[i] = weights;
 	  }
@@ -284,133 +300,200 @@ main (void)
       weightOutFile.close ();
 
       // prepare yasmet datasets
-      for (unsigned g = 0; g < sourceSentences.size (); g++)
+      if (argc == 3)
 	{
-	  vector<
-	      pair<pair<unsigned, unsigned>, pair<unsigned, vector<vector<xml_node> > > > > ambigInfo =
-	      vambigInfo[g];
-
-	  vector<vector<unsigned> > weigInds = vweigInds[g];
-
-	  vector<float> weights = vweights[g];
-
-	  vector<string> slTokens = vslTokens[g];
-
-	  vector<vector<unsigned> >::iterator weigIndIt = weigInds.begin ();
-	  for (unsigned i = 0; i < ambigInfo.size (); i++)
+	  cout << "Yasmet training started" << endl;
+	  for (unsigned g = 0; g < sourceSentences.size (); g++)
 	    {
+	      vector<
+		  pair<pair<unsigned, unsigned>,
+		      pair<unsigned, vector<vector<xml_node> > > > > ambigInfo =
+		  vambigInfo[g];
 
-	      pair<pair<unsigned, unsigned>, pair<unsigned, vector<vector<xml_node> > > > p1 =
-		  ambigInfo[i];
-	      pair<unsigned, unsigned> p2 = p1.first;
-	      vector<vector<xml_node> > ambigRules = p1.second.second;
+	      vector<vector<unsigned> > weigInds = vweigInds[g];
 
-	      // name of the file is the concatenation of patterns
-	      string rulesNums;
-	      for (unsigned x = 0; x < ambigRules.size (); x++)
+	      vector<float> weights = vweights[g];
+
+	      vector<string> slTokens = vslTokens[g];
+
+	      vector<vector<unsigned> >::iterator weigIndIt = weigInds.begin ();
+	      for (unsigned i = 0; i < ambigInfo.size (); i++)
 		{
-		  for (unsigned y = 0; y < ambigRules[x].size (); y++)
+
+		  pair<pair<unsigned, unsigned>,
+		      pair<unsigned, vector<vector<xml_node> > > > p1 = ambigInfo[i];
+		  pair<unsigned, unsigned> p2 = p1.first;
+		  vector<vector<xml_node> > ambigRules = p1.second.second;
+
+		  // name of the file is the concatenation of rules ids
+		  string rulesNums;
+		  for (unsigned x = 0; x < ambigRules.size (); x++)
 		    {
-		      xml_node rule = ambigRules[x][y];
-		      string ruleCmnt = rule.first_attribute ().value ();
-
-		      rulesNums += ruleCmnt.substr (ruleCmnt.find_last_of ("-") + 1);
-		      rulesNums += "_";
-
-		    }
-		  rulesNums += "+";
-		}
-
-	      // if it's the first time to open , put the number of classes
-	      bool firstTime = true;
-	      if (FILE *file = fopen ((DATASETS + string ("/") + rulesNums).c_str (),
-				      "r"))
-		{
-		  firstTime = false;
-		  fclose (file);
-		}
-
-	      ofstream dataset ((DATASETS + string ("/") + rulesNums).c_str (),
-				ofstream::out | ofstream::app);
-
-	      if (firstTime)
-		dataset << ambigRules.size () << endl;
-
-	      for (unsigned x = 0; x < ambigRules.size (); x++)
-		{
-
-		  dataset << x << " $ ";
-
-		  vector<unsigned> weigInd = *weigIndIt++;
-		  float count = 0;
-
-		  for (unsigned z = 0; z < weigInd.size (); z++)
-		    count += weights[weigInd[z]];
-
-		  dataset << count << " #";
-
-		  string features;
-		  for (unsigned v = 0; v < ambigRules.size (); v++)
-		    {
-		      char label[21];
-		      sprintf (label, "%d", v);
-
-		      for (unsigned z = p2.first; z < p2.first + p2.second; z++)
+		      for (unsigned y = 0; y < ambigRules[x].size (); y++)
 			{
-			  char num[21];
-			  sprintf (num, "%d", z - p2.first);
-			  string word = CLExec::toLowerCase (slTokens[z]);
-			  for (unsigned c = 0; c < word.length (); c++)
-			    if (word[c] == ' ')
-			      word.replace (c, 1, "_");
+			  xml_node rule = ambigRules[x][y];
+			  string ruleCmnt = rule.first_attribute ().value ();
 
-			  features += " " + word + "_" + num + ":" + label;
+			  rulesNums += ruleCmnt.substr (ruleCmnt.find_last_of ("-") + 1);
+			  rulesNums += "_";
+
 			}
-		      features += " #";
+		      rulesNums += "+";
 		    }
-		  dataset << features << endl;
+
+		  // if it's the first time to open , put the number of classes
+		  bool firstTime = true;
+		  if (FILE *file = fopen ((DATASETS + string ("/") + rulesNums).c_str (),
+					  "r"))
+		    {
+		      firstTime = false;
+		      fclose (file);
+		    }
+
+		  ofstream dataset ((DATASETS + string ("/") + rulesNums).c_str (),
+				    ofstream::out | ofstream::app);
+
+		  if (firstTime)
+		    dataset << ambigRules.size () << endl;
+
+		  for (unsigned x = 0; x < ambigRules.size (); x++)
+		    {
+
+		      dataset << x << " $ ";
+
+		      vector<unsigned> weigInd = *weigIndIt++;
+		      float count = 0;
+
+		      for (unsigned z = 0; z < weigInd.size (); z++)
+			{
+			  count += weights[weigInd[z]];
+			}
+
+		      dataset << count << " #";
+
+		      string features;
+		      for (unsigned v = 0; v < ambigRules.size (); v++)
+			{
+			  char label[21];
+			  sprintf (label, "%d", v);
+
+			  for (unsigned z = p2.first; z < p2.first + p2.second; z++)
+			    {
+			      char num[21];
+			      sprintf (num, "%d", z - p2.first);
+			      string word = CLExec::toLowerCase (slTokens[z]);
+			      for (unsigned c = 0; c < word.length (); c++)
+				if (word[c] == ' ')
+				  word.replace (c, 1, "_");
+
+			      features += " " + word + "_" + num + ":" + label;
+			    }
+			  features += " #";
+			}
+		      dataset << features << endl;
+		    }
+		  dataset.close ();
 		}
-	      dataset.close ();
 	    }
+	  cout << "Yasmet training finished" << endl;
 	}
 
-      for (unsigned i = 0; i < sourceSentences.size (); i++)
+      // beamSearch
+      if (argc == 4)
 	{
-	  // Write sentence analysis
-	  outputFile
-	      << "---------------------------------------------------------------------------------------------------------"
-	      << endl << endl;
-	  outputFile << "Analysis of sentence : " << endl;
-	  outputFile << sourceSentences[i] << endl << endl << endl;
+	  cout << "Beam search started" << endl;
 
-	  outputFile << endl;
-	  outputFile << "sentence id ||| coverage id ||| original sentence |||"
-	      << " lextor ||| rules ||| chunker ||| final sentence ||| score" << endl
-	      << endl;
+	  CLExec::runYasmet ();
 
-	  for (unsigned j = 0; j < vweights[i].size (); j++)
+	  // load yasmet models data
+	  map<string, map<string, vector<float> > > classesWeights =
+	      CLExec::loadYasmetModels ();
+
+	  int beam;
+	  istringstream buffer (argv[3]);
+	  buffer >> beam;
+
+	  vector<pair<unsigned, float> > bestTransInds;
+
+	  for (unsigned i = 0; i < sourceSentences.size (); i++)
 	    {
-	      // sentence id
-	      outputFile << (i + 1) << " ||| ";
-	      // coverage id
-	      outputFile << (j + 1) << " ||| ";
-	      // original sentence
-	      outputFile << sourceSentences[i] << " ||| ";
-	      // lextor
-	      outputFile << tokenizedSentences[i] << " ||| ";
-	      // rules
-	      for (unsigned k = 0; k < vrulesIds[i][j].size (); k++)
-		outputFile << vrulesIds[i][j][k] << " ";
-	      outputFile << "||| ";
-	      // chuncker
-	      outputFile << vouts[i][j] << " ||| ";
-	      // final sentence
-	      outputFile << vtransfers[i][j] << " ||| ";
-	      // score
-	      outputFile << vweights[i][j] << endl << endl;
+	      vector<pair<vector<unsigned>, float> > beamTree;
+	      CLExec::beamSearch (&beamTree, beam, vslTokens[i], vambigInfo[i],
+				  classesWeights);
+
+	      vector<pair<unsigned, float> > transInds;
+	      CLExec::getTransInds (&transInds, beamTree, vrulesIds[i]);
+
+	      // Take the best translation index and weight only
+	      bestTransInds.push_back (transInds[0]);
 	    }
+
+	  // write best translations to file
+	  ofstream beamFile (beamFilePath.c_str ());
+	  if (beamFile.is_open ())
+	    {
+	      beamFile << "Beam search algorithm results with beam = " << beam << endl;
+	      beamFile << "-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"
+		  << endl << endl << endl;
+	      for (unsigned i = 0; i < sourceSentences.size (); i++)
+		{
+		  beamFile << (i + 1) << endl;
+		  beamFile << "Source : " << sourceSentences[i] << endl;
+		  beamFile << "Target : " << vouts[i][bestTransInds[i].first] << endl;
+		  if (bestTransInds[i].second == 0)
+		    beamFile << "Weight : " << 1 << endl;
+		  else
+		    beamFile << "Weight : " << bestTransInds[i].second << endl;
+		  beamFile << "--------------------------------------------------" << endl
+		      << endl;
+		}
+	      beamFile.close ();
+	    }
+
+	  cout << "Beam search finished" << endl;
 	}
-      outputFile.close ();
+
+      // Write sentence analysis
+      ofstream outputFile (outputFilePath.c_str ());
+      if (outputFile.is_open ())
+	{
+	  for (unsigned i = 0; i < sourceSentences.size (); i++)
+	    {
+	      outputFile
+		  << "---------------------------------------------------------------------------------------------------------"
+		  << endl << endl;
+	      outputFile << "Analysis of sentence : " << endl;
+	      outputFile << sourceSentences[i] << endl << endl << endl;
+
+	      outputFile << endl;
+	      outputFile << "sentence id ||| coverage id ||| original sentence |||"
+		  << " lextor ||| rules ||| chunker ||| final sentence ||| score" << endl
+		  << endl;
+
+	      for (unsigned j = 0; j < vweights[i].size (); j++)
+		{
+		  // sentence id
+		  outputFile << (i + 1) << " ||| ";
+		  // coverage id
+		  outputFile << (j + 1) << " ||| ";
+		  // original sentence
+		  outputFile << sourceSentences[i] << " ||| ";
+		  // lextor
+		  outputFile << tokenizedSentences[i] << " ||| ";
+		  // rules
+		  for (unsigned k = 0; k < vrulesIds[i][j].size (); k++)
+		    outputFile << vrulesIds[i][j][k] << " ";
+		  outputFile << "||| ";
+		  // chuncker
+		  outputFile << vouts[i][j] << " ||| ";
+		  // final sentence
+		  outputFile << vtransfers[i][j] << " ||| ";
+		  // score
+		  outputFile << vweights[i][j] << endl << endl;
+		}
+	    }
+	  outputFile.close ();
+	}
     }
   else
     {
@@ -427,4 +510,5 @@ main (void)
   << (stop.tv_sec - start.tv_sec + (stop.tv_usec - start.tv_usec) / 1000000.0)
       << "  seconds" << endl;
 
+  return 0;
 }
