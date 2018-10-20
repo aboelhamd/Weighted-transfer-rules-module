@@ -403,7 +403,7 @@ main (int argc, char **argv)
 	{
 	  cout << "Beam search started" << endl;
 
-	  //CLExec::runYasmet ();
+//	  CLExec::runYasmet ();
 
 	  // load yasmet models data
 	  map<string, map<string, vector<float> > > classesWeights =
@@ -439,7 +439,8 @@ main (int argc, char **argv)
 		{
 		  beamFile << (i + 1) << endl;
 		  beamFile << "Source : " << sourceSentences[i] << endl;
-		  beamFile << "Target : " << vtransfers[i][bestTransInds[i].first] << endl;
+		  beamFile << "Target : " << vtransfers[i][bestTransInds[i].first]
+		      << endl;
 		  if (bestTransInds[i].second == 0)
 		    beamFile << "Weight : " << 1 << endl;
 		  else
@@ -455,53 +456,52 @@ main (int argc, char **argv)
 
       // Write sentence analysis
       /*ofstream outputFile (outputFilePath.c_str ());
-      if (outputFile.is_open ())
-	{
-	  for (unsigned i = 0; i < sourceSentences.size (); i++)
-	    {
-	      outputFile
-		  << "---------------------------------------------------------------------------------------------------------"
-		  << endl << endl;
-	      outputFile << "Analysis of sentence : " << endl;
-	      outputFile << sourceSentences[i] << endl << endl << endl;
+       if (outputFile.is_open ())
+       {
+       for (unsigned i = 0; i < sourceSentences.size (); i++)
+       {
+       outputFile
+       << "---------------------------------------------------------------------------------------------------------"
+       << endl << endl;
+       outputFile << "Analysis of sentence : " << endl;
+       outputFile << sourceSentences[i] << endl << endl << endl;
 
-	      outputFile << endl;
-	      outputFile << "sentence id ||| coverage id ||| original sentence |||"
-		  << " lextor ||| rules ||| chunker ||| final sentence ||| score" << endl
-		  << endl;
+       outputFile << endl;
+       outputFile << "sentence id ||| coverage id ||| original sentence |||"
+       << " lextor ||| rules ||| chunker ||| final sentence ||| score" << endl
+       << endl;
 
-	      for (unsigned j = 0; j < vweights[i].size (); j++)
-		{
-		  // sentence id
-		  outputFile << (i + 1) << " ||| ";
-		  // coverage id
-		  outputFile << (j + 1) << " ||| ";
-		  // original sentence
-		  outputFile << sourceSentences[i] << " ||| ";
-		  // lextor
-		  outputFile << tokenizedSentences[i] << " ||| ";
-		  // rules
-		  for (unsigned k = 0; k < vrulesIds[i][j].size (); k++)
-		    outputFile << vrulesIds[i][j][k] << " ";
-		  outputFile << "||| ";
-		  // chuncker
-		  outputFile << vouts[i][j] << " ||| ";
-		  // final sentence
-		  outputFile << vtransfers[i][j] << " ||| ";
-		  // score
-		  outputFile << vweights[i][j] << endl << endl;
-		}
-	    }
-	  outputFile.close ();
-	}*/
+       for (unsigned j = 0; j < vweights[i].size (); j++)
+       {
+       // sentence id
+       outputFile << (i + 1) << " ||| ";
+       // coverage id
+       outputFile << (j + 1) << " ||| ";
+       // original sentence
+       outputFile << sourceSentences[i] << " ||| ";
+       // lextor
+       outputFile << tokenizedSentences[i] << " ||| ";
+       // rules
+       for (unsigned k = 0; k < vrulesIds[i][j].size (); k++)
+       outputFile << vrulesIds[i][j][k] << " ";
+       outputFile << "||| ";
+       // chuncker
+       outputFile << vouts[i][j] << " ||| ";
+       // final sentence
+       outputFile << vtransfers[i][j] << " ||| ";
+       // score
+       outputFile << vweights[i][j] << endl << endl;
+       }
+       }
+       outputFile.close ();
+       }*/
     }
   else
     {
       cout << "ERROR in opening files!" << endl;
     }
 
-  cout << endl << "-----------------------------------------------------" << endl
-      << endl;
+  cout << endl << "-----------------------------------------------------" << endl << endl;
   cout << "Finished" << endl;
 
   gettimeofday (&stop, NULL);
