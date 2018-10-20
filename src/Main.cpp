@@ -403,7 +403,7 @@ main (int argc, char **argv)
 	{
 	  cout << "Beam search started" << endl;
 
-	  CLExec::runYasmet ();
+	  //CLExec::runYasmet ();
 
 	  // load yasmet models data
 	  map<string, map<string, vector<float> > > classesWeights =
@@ -454,7 +454,7 @@ main (int argc, char **argv)
 	}
 
       // Write sentence analysis
-      ofstream outputFile (outputFilePath.c_str ());
+      /*ofstream outputFile (outputFilePath.c_str ());
       if (outputFile.is_open ())
 	{
 	  for (unsigned i = 0; i < sourceSentences.size (); i++)
@@ -493,14 +493,14 @@ main (int argc, char **argv)
 		}
 	    }
 	  outputFile.close ();
-	}
+	}*/
     }
   else
     {
       cout << "ERROR in opening files!" << endl;
     }
 
-  cout << endl << endl << "-----------------------------------------------------" << endl
+  cout << endl << "-----------------------------------------------------" << endl
       << endl;
   cout << "Finished" << endl;
 

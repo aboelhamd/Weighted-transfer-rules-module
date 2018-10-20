@@ -140,6 +140,9 @@
 <def-cat n="vaux-pih">
       <cat-item tags="vaux.pih.*"/>
     </def-cat>
+<def-cat n="vaux-neg-pih">
+      <cat-item tags="vaux.*.pih.*"/>
+    </def-cat>
 
 <def-cat n="cop">
       <cat-item  tags="cop.*"/>
@@ -261,15 +264,16 @@
 
 <def-attr n="a_cas">
       <attr-item tags="nom"/>
+      <attr-item tags="loc"/>
     </def-attr>
 
 <def-attr n="evid">
       <attr-item tags="aor.evid"/>
       <attr-item tags="ifi.evid"/>
       <attr-item tags="past.evid"/>
-	  <attr-item tags="prog.evid"/>
-	  <attr-item tags="aor"/>
-	  <attr-item tags="past"/>
+<attr-item tags="prog.evid"/>
+<attr-item tags="aor"/>
+<attr-item tags="past"/>
       <attr-item tags="dub.aor"/>
     </def-attr>
 
@@ -292,9 +296,7 @@
 <def-attr n="ger">
       <attr-item tags="ger"/> 
     </def-attr>
-<def-attr n="loc">
-      <attr-item tags="loc"/> 
-    </def-attr>
+
 <def-attr n="acc">
       <attr-item tags="acc"/>
       </def-attr>
@@ -316,6 +318,10 @@
      <attr-item tags="iv"/>
      <attr-item tags="tv"/>
    </def-attr>
+
+<def-attr n="a_pass">
+      <attr-item tags="pass"/> 
+    </def-attr>
 
 <def-attr n="a_gna">
      <attr-item tags="ger_past"/>
@@ -419,15 +425,15 @@
      <attr-item tags="aor"/>
      <attr-item tags="prc_perf"/>
      <attr-item tags="fut"/>
-     <attr-item tags="ger_pabs"/>
+    <attr-item tags="ger_pabs"/>
      <attr-item tags="ger_fut"/>
      <attr-item tags="gna_perf"/>
-	 <attr-item tags="gpr_impf"/>
+<attr-item tags="gpr_impf"/>
      <attr-item tags="prog"/>
      <attr-item tags="past"/>
      <attr-item tags="imp"/>
      <attr-item tags="gna_impf"/>
- 	 <attr-item tags="gna_ken"/>
+<attr-item tags="gna_ken"/>
      <attr-item tags="ger_past"/>
      <attr-item tags="gpr_past"/>
      <attr-item tags="gna_cond"/>
@@ -572,7 +578,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: gpr_impf_subst-2" > <!--болашағы -> olacağı  -->
+<rule comment="REGLA: gpr_impf_subst-2" > <!---болашағы -> olacağı  -->
       <pattern>
         <pattern-item n="gpr_impf_subst"/>
       </pattern>
@@ -863,7 +869,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: v-ger-13" > <!--табу -> bulma --> 
+<rule comment="REGLA: v-ger-12" > <!--табу -> bulma --> 
       <pattern>
         <pattern-item n="v-ger"/>
       </pattern>
@@ -889,7 +895,7 @@
     </rule>
 
 
-<rule comment="REGLA: v-ger-12" > <!--табу -> bulmak --> 
+<rule comment="REGLA: v-ger-13" > <!--табу -> bulmak --> 
       <pattern>
         <pattern-item n="v-ger"/>
       </pattern>
@@ -918,11 +924,7 @@
     </rule>
 
 
-
-
-
-
-<rule comment="REGLA: prc_perf+vaux_prc_perf+da+yat_pres-14" > <!-- шыға алмай да тұр. -> çıkamıyor da -->
+<rule comment="REGLA: prc_impf+vaux_prc_perf+da+yat_pres-14" > <!-- шыға алмай да тұр. -> çıkamıyor da -->
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="vaux_prc_perf"/>
@@ -964,7 +966,7 @@
 
 
 
-<rule comment="REGLA: neg-ifi+vaux-neg-ifi-15" >  <!--ойнай алмады -> oynayamadı--> 
+<rule comment="REGLA: prc_impf+vaux-neg-ifi-15" >  <!--ойнай алмады -> oynayamadı--> 
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="vaux-neg-ifi"/>
@@ -1051,9 +1053,35 @@
       </action>
     </rule>
 
+<rule comment="REGLA: prc_impf+vaux_gna_cond-18" > <!--бола тұрса -> olsa-->
+      <pattern>
+        <pattern-item n="prc_impf"/>
+        <pattern-item n="vaux_gna_cond"/>
+      </pattern>
+      <action>
+ 
+<let>
+<clip pos="1" side="tl" part="a_aspect"/><lit-tag v="gna_cond"/>
+</let>
+        <let>
+          <clip pos="1" side="tl" part="whole"/>
 
+          <concat><clip pos="1" side="tl" part="lem"/><clip pos="1" side="tl" part="v_trans"/><clip pos="2" side="tl" part="gn_cond"/><clip pos="2" side="tl" part="a_pers_nbr"/></concat>
+        </let>
+        <out>
+          <chunk name="v" case="caseFirstWord">
+            <tags>
+              <tag><lit-tag v="SV"/></tag>
+            </tags>
+            <lu>
+              <clip pos="1" side="tl" part="whole"/>
+            </lu>
+          </chunk>
+        </out>
+      </action>
+    </rule>
 
-<rule comment="REGLA: prc_perf+vaux_prc_perf+yat_pres-18" > <!--таба алмай жатыр -> bulamıyor --> 
+<rule comment="REGLA: prc_impf+vaux_prc_perf+yat_pres-19" > <!--таба алмай жатыр -> bulamıyor --> 
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="vaux_prc_perf"/>
@@ -1086,7 +1114,9 @@
 
 
 
-<rule comment="REGLA: prc_impf+vaux-gna_perf-19" > <!--пайдалана отырып -> kullanıp-->
+
+
+<rule comment="REGLA: prc_impf+vaux-gna_perf-20" > <!--пайдалана отырып -> kullanıp-->
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="vaux-gna_perf"/>
@@ -1115,7 +1145,7 @@
     </rule>
 
 
-<rule comment="REGLA: prc_perf+vaux-imp-20" > <!-- тауып бер -> bul -->
+<rule comment="REGLA: prc_perf+vaux-imp-21" > <!-- тауып бер -> bul -->
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="vaux-imp"/>
@@ -1144,7 +1174,7 @@
     </rule>
     
     
-<rule comment="REGLA: prc_perf+vaux-ger_past-21" > <!-- алып қалғанына -> aldığına -->
+<rule comment="REGLA: prc_perf+vaux-ger_past-22" > <!-- алып қалғанына -> aldığına -->
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="vaux-ger_past"/>
@@ -1174,7 +1204,7 @@
     </rule>
 
 
-<rule comment="REGLA: prc_perf+vaux-gpr_past-22" > <!--алып жүрген ->aldık-->
+<rule comment="REGLA: prc_perf+vaux-gpr_past-23" > <!--алып жүрген ->aldık-->
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="vaux-gpr_past"/>
@@ -1204,7 +1234,7 @@
     </rule>
 
 
-<rule comment="REGLA: prc_perf+vaux-ger-23" >
+<rule comment="REGLA: prc_perf+vaux-ger-24" >
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="vaux-ger"/>
@@ -1233,7 +1263,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: prc_perf+vaux-past-24" > <!-- ~ боп келген -> olmuş ~ -->
+<rule comment="REGLA: prc_perf+vaux-past-25" > <!-- ~ боп келген -> olmuş ~ -->
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="vaux-past"/>
@@ -1263,7 +1293,7 @@
     </rule>
 
 
-<rule comment="REGLA: prc_impf+vaux-past-25" > <!-- ~ бара жатқан -> gitmiş ~ -->
+<rule comment="REGLA: prc_impf+vaux-past-26" > <!-- ~ бара жатқан -> gitmiş ~ -->
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="vaux-past"/>
@@ -1292,7 +1322,7 @@
       </action>
     </rule>
     
-<rule comment="REGLA: opt-26" >
+<rule comment="REGLA: opt-27" >
       <pattern>
         <pattern-item n="opt"/>
       </pattern>
@@ -1317,14 +1347,14 @@
       </action>
     </rule>
 
-<rule comment="REGLA: pih-27" > <!--болатын -> olmuş-->
+<rule comment="REGLA: pih-28" > <!--болатын -> olmuş-->
       <pattern>
         <pattern-item n="pih"/>
       </pattern>
       <action>
-<let>
+<!--<let>
 <clip pos="1" side="tl" part="a_aspect"/><lit-tag v="ger_pabs"/>
-</let>
+</let>-->
         <let>
           <clip pos="1" side="tl" part="whole"/>
           <concat><clip pos="1" side="tl" part="lem"/><clip pos="1" side="tl" part="v_trans"/><lit-tag v="ger_pabs"/><lit-tag v="nom"/></concat>
@@ -1342,7 +1372,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: prc_perf+vaux-pih-28" > <!--сойып беретін. -> kesmiş-->
+<rule comment="REGLA: prc_perf+vaux-pih-29" > <!--сойып беретін. -> kesmiş-->
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="vaux-pih"/>
@@ -1368,25 +1398,18 @@
       </action>
     </rule>
 
-
-    
-    
- <rule comment="REGLA: prc_impf+ifi-29" > <!-- дами бастады. -> gelişti-->
+<rule comment="REGLA: prc_perf+vaux-pih-30" > <!--сойып беретін. -> kesmiş-->
       <pattern>
         <pattern-item n="prc_impf"/>
-        <pattern-item n="ifi"/>
+        <pattern-item n="vaux-neg-pih"/>
       </pattern>
       <action>
- 
 <let>
-<clip pos="1" side="tl" part="a_aspect"/><lit-tag v="ifi"/>
+<clip pos="1" side="tl" part="a_aspect"/><lit-tag v="ger_pabs"/>
 </let>
         <let>
           <clip pos="1" side="tl" part="whole"/>
-
-
-
-          <concat><clip pos="1" side="tl" part="lem"/><clip pos="1" side="tl" part="v_trans"/><clip pos="2" side="tl" part="tenses"/><clip pos="2" side="tl" part="a_pers_nbr"/></concat>
+          <concat><clip pos="1" side="tl" part="lem"/><clip pos="1" side="tl" part="v_trans"/><clip pos="2" side="tl" part="neg"/><lit-tag v="ger_pabs"/><lit-tag v="nom"/></concat>
         </let>
         <out>
           <chunk name="v" case="caseFirstWord">
@@ -1402,7 +1425,40 @@
     </rule>
 
 
-<rule comment="REGLA: prc_impf+vaux-aor-30" >  <!-- ұсына аласыз ба?  -> önerir misiniz? --> <!-- turbulent rule--> 
+    
+    
+ <rule comment="REGLA: prc_impf+ifi-31" >  <!--дами бастады. -> gelişti-->
+      <pattern>
+        <pattern-item n="prc_impf"/>
+        <pattern-item n="ifi"/>
+      </pattern>
+      <action>
+ 
+<let>
+<clip pos="1" side="tl" part="a_aspect"/><lit-tag v="ifi"/>
+</let>
+        <let>
+          <clip pos="1" side="tl" part="whole"/>
+
+
+
+          <concat><clip pos="1" side="tl" part="lem"/><clip pos="1" side="tl" part="v_trans"/><clip pos="1" side="tl" part="a_pass"/><clip pos="2" side="tl" part="tenses"/><clip pos="2" side="tl" part="a_pers_nbr"/></concat>
+        </let>
+        <out>
+          <chunk name="v" case="caseFirstWord">
+            <tags>
+              <tag><lit-tag v="SV"/></tag>
+            </tags>
+            <lu>
+              <clip pos="1" side="tl" part="whole"/>
+            </lu>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
+
+<rule comment="REGLA: prc_impf+vaux-aor-32" >  <!-- ұсына аласыз ба?  -> önerir misiniz? --> <!-- turbulent rule--> 
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="vaux-aor"/>
@@ -1438,8 +1494,7 @@
       </action>
     </rule>
 
-
-<rule comment="REGLA: prn+nom-32"> <!-- біздің Конституциямызды -> anayasamızı --> 
+<rule comment="REGLA: prn+nom-33"> <!-- біздің Конституциямызды -> anayasamızı --> 
 
      <pattern>
      
@@ -1449,7 +1504,7 @@
        </pattern>
 
 <action>
-<choose>
+<!--<choose>
    <when>
 
      <test><equal><clip pos="1" side="tl" part="a_pers_nbr"/> 
@@ -1457,10 +1512,11 @@
   
      <let><clip pos="1" side="tl" part="a_pers_nbr"/><lit-tag v="px1pl"/></let>
     </when>
-</choose>
+</choose>-->
+
 <let>
           <clip pos="2" side="tl" part="whole"/>
-          <concat><clip pos="2" side="tl" part="lem"/><lit-tag v="n"/><clip pos="1" side="tl" part="a_pers_nbr"/><lit-tag v="nom"/></concat>
+          <concat><clip pos="2" side="tl" part="lem"/><lit-tag v="n"/><clip pos="2" side="tl" part="poss_v"/><lit-tag v="nom"/></concat>
         </let>
 
 
@@ -1479,10 +1535,7 @@
       </action>
     </rule>
 
- 
-    
-    
-<rule comment="REGLA: prn+nom-31"> <!-- біздің Конституциямызды -> bizim anayasamızı --> 
+<rule comment="REGLA: prn+nom-34"> <!-- біздің Конституциямызды -> bizim anayasamızı --> 
 
      <pattern>
         <pattern-item n="prn"/>
@@ -1535,12 +1588,9 @@
         </out>
       </action>
     </rule>
+   
     
-    
-
-    
-    
-<rule comment="REGLA: imp-33"> <!-- Аттан! -> gidelim -->
+<rule comment="REGLA: imp-35"> <!-- Аттан! -> gidelim -->
 
      <pattern>
         <pattern-item n="imp"/>
@@ -1595,7 +1645,7 @@
     </rule>
     
     
-<rule comment="REGLA: imp-34"> <!-- Аттан! -> git -->
+<rule comment="REGLA: imp-36"> <!-- Аттан! -> git -->
 
      <pattern>
         <pattern-item n="imp"/>
@@ -1646,7 +1696,7 @@
     </rule>
     
     
-<rule comment="REGLA: Formal-35" > 
+<rule comment="REGLA: Formal-37" > 
        <pattern>
         <pattern-item n="frm"/>    
       </pattern>
@@ -1673,7 +1723,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: fut-36" > <!-- естірсіз. -> işiteceksiniz -->
+<rule comment="REGLA: fut-38" > <!-- естірсіз. -> işiteceksiniz -->
        <pattern>
         <pattern-item n="fut"/>    
       </pattern>
@@ -1701,7 +1751,7 @@
 
 
 
-<rule comment="REGLA: V-frm-37" > <!-- ~қылғаныңыз -> ~yaptığınız -->
+<rule comment="REGLA: V-frm-39" > <!-- ~қылғаныңыз -> ~yaptığınız -->
        <pattern>
         <pattern-item n="V-frm"/>    
       </pattern>
@@ -1742,7 +1792,7 @@
 
 
     
-<rule comment="REGLA: prc_impf+vaux-gpr_past-38" ><!--келмей жатқан -> gelmedik-->
+<rule comment="REGLA: prc_impf+vaux-gpr_past-40" ><!--келмей жатқан -> gelmedik-->
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="vaux-gpr_past"/>
@@ -1771,7 +1821,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: prc_impf-39" > <!-- іске асыра алмайтындай -> uygulanmayack -->
+<rule comment="REGLA: prc_impf+aux-gpr_impf-41" > <!-- іске асыра алмайтындай -> uygulanmayack -->
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="aux-gpr_impf"/>
@@ -1803,7 +1853,7 @@
     </rule>
 
 
-<rule comment="REGLA: prc_impf-40" > <!-- арттыра -> artırarak -->
+<rule comment="REGLA: prc_impf-42" > <!-- арттыра -> artırarak -->
       <pattern>
         <pattern-item n="prc_impf"/>
       </pattern>
@@ -1831,7 +1881,7 @@
 
     
     
-<rule comment="REGLA: prc_impf+vaux-opt-41" >
+<rule comment="REGLA: prc_impf+vaux-opt-43" >
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="vaux-opt"/>
@@ -1860,7 +1910,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: prc_perf+vaux-opt-42" > <!-- ~ қосып берейік -> katalım ~ -->
+<rule comment="REGLA: prc_perf+vaux-opt-44" > <!-- ~ қосып берейік -> katalım ~ -->
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="vaux-opt"/>
@@ -1889,7 +1939,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: V-ger_past-43" > <!-- ~ Сөйткенде -> şöyle yaparak -->
+<rule comment="REGLA: V-ger_past-45" > <!-- ~ Сөйткенде -> şöyle yaparak -->
        <pattern>
         <pattern-item n="V-ger_past"/>    
       </pattern>
@@ -1919,7 +1969,7 @@
 
 
 
-<rule comment="REGLA: V-ger_past-44" > <!-- ~ қолдан келгенді -> elden geldiği -->
+<rule comment="REGLA: V-ger_past-46" > <!-- ~ қолдан келгенді -> elden geldiği -->
        <pattern>
         <pattern-item n="V-ger_past"/>    
       </pattern>
@@ -1945,7 +1995,7 @@
     </rule>
 
 
-<rule comment="REGLA: gpr_past-45" >
+<rule comment="REGLA: gpr_past-47" >
        <pattern>
         <pattern-item n="gpr_past"/>    
       </pattern>
@@ -1970,7 +2020,7 @@
     </rule>
 
 
-<rule comment="REGLA: gpr_past-46">
+<rule comment="REGLA: gpr_past-48">
        <pattern>
         <pattern-item n="gpr_past"/>    
       </pattern>
@@ -1994,7 +2044,7 @@
 
 
 
-<rule comment="REGLA: gpr_past-gpr_past-47" >
+<rule comment="REGLA: gpr_past-gpr_past-49" >
        <pattern>
         <pattern-item n="gpr_past_gpr_past"/>    
       </pattern>
@@ -2008,10 +2058,11 @@
             <lu>
               <clip pos="1" side="tl" part="lem"/>
               <clip pos="1" side="tl" part="v_trans"/>
+              <clip pos="1" side="tl" part="neg"/>
               <clip pos="1" side="tl" part="gp_past"/>
               <lit-tag v="subst"/>
               <lit-tag v="px3sp"/>
-              <clip pos="1" side="tl" part="loc"/>
+              <clip pos="1" side="tl" part="a_cas"/>
             </lu>
           </chunk>
         </out>
@@ -2020,7 +2071,7 @@
 
 
 
-<rule comment="REGLA: past-48" > <!-- деген екен -> demiş -->
+<rule comment="REGLA: past-50" > <!-- деген екен -> demiş -->
       <pattern>
         <pattern-item n="past"/>
       </pattern>
@@ -2057,7 +2108,7 @@
     
     
     
-<rule comment="REGLA: prc_impf+fut plan-49" >  <!-- жақсара бермек. -> gelişecek --> <!--this rule have disambugation problem-->
+<rule comment="REGLA: prc_impf+fut plan-51" >  <!-- жақсара бермек. -> gelişecek --> <!--this rule have disambugation problem-->
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="fut_plan"/>
@@ -2087,7 +2138,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: prc_impf+vaux-ger_past-50" > <!-- ~ келе жатқаны ->  geldiği ~ -->
+<rule comment="REGLA: prc_impf+vaux-ger_past-52" > <!-- ~ келе жатқаны ->  geldiği ~ -->
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="vaux-ger_past"/>
@@ -2114,7 +2165,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: prc_impf+fplan-51" > <!--жақсара бермек -> gelişecek  there problem with this rule-->
+<rule comment="REGLA: prc_impf+fplan-53" > <!--жақсара бермек -> gelişecek  there problem with this rule-->
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="fplan"/>
@@ -2143,7 +2194,7 @@
     </rule>
 
 
-<rule comment="REGLA: f_plan-52" > <!-- болмақ -> olacak -->
+<rule comment="REGLA: f_plan-54" > <!-- болмақ -> olacak -->
        <pattern>
         <pattern-item n="f_plan"/>    
       </pattern>
@@ -2176,7 +2227,7 @@
     </rule>
 
 
-<rule comment="REGLA: prc_impf+vaux-fut-53" > <!-- |кіре алмас| -> |girmeyecek| -->
+<rule comment="REGLA: prc_impf+vaux-fut-55" > <!-- |кіре алмас| -> |girmeyecek| -->
        <pattern>
         <pattern-item n="prc_impf"/> 
         <pattern-item n="vaux-fut"/>   
@@ -2206,7 +2257,7 @@
     </rule>
     
 
-<rule comment="REGLA: prc_perf+ifi-54" >  <!-- тұра қалды -> durdu-->
+<rule comment="REGLA: prc_perf+ifi-56" >  <!-- келіп жатты -> geldi-->
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="ifi"/>
@@ -2238,7 +2289,7 @@
     </rule>
     
 
-<rule comment="REGLA: ifi-55">
+<rule comment="REGLA: ifi-57">
        <pattern>
         <pattern-item n="ifi"/>    
       </pattern>
@@ -2263,7 +2314,7 @@
 
 
 
-<rule comment="REGLA: nom+pres-56"> <!--қарсаңында тұрмыз -> arifesindeyiz -->
+<rule comment="REGLA: nom+pres-58">
       <pattern>
         <pattern-item n="nom"/>
         <pattern-item n="pres"/>
@@ -2295,7 +2346,7 @@
 
 
 
-<rule comment="REGLA: prc_perf+pres-neg-57"> <!-- ~ көріп тұрған -> görmüyor ~ --> 
+<rule comment="REGLA: prc_perf+pres-neg-59"> <!-- ~ көріп тұрған -> görmüyor ~ --> 
       <pattern>
         <pattern-item n="prc_perf"/> 
         <pattern-item n="pres-neg"/>
@@ -2326,7 +2377,9 @@
     </rule>
 
 
-<rule comment="REGLA: prc_perf+pres-58"> <!-- тұрып жатырсыздар -> yaşıyorsunuz -->
+
+
+<rule comment="REGLA: prc_perf+pres-60"> <!-- тұрып жатырсыздар -> yaşıyorsunuz -->
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="pres"/>
@@ -2358,7 +2411,8 @@
       </action>
     </rule>
 
-<rule comment="REGLA: prc_perf+da+pres-59">  <!-- алмай да тұр -> çıkamıyor da -->
+
+<rule comment="REGLA: prc_perf+da+pres-61">  <!-- алмай да тұр -> çıkamıyor da -->
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="da"/>
@@ -2399,7 +2453,8 @@
 
 
 
-<rule comment="REGLA: prc_perf+vaux-aor-60"><!--жасап келесіз ->yaparsınız -->
+
+<rule comment="REGLA: prc_perf+vaux-aor-62"><!--жасап келесіз ->yaparsınız -->
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="vaux-aor"/>
@@ -2430,7 +2485,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: prc_impf+ баста-61"> <!-- -->
+<rule comment="REGLA: prc_impf+ баста-63"> <!-- -->
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="баста"/>
@@ -2468,9 +2523,7 @@
       </action>
     </rule>
 
-
-
-<rule comment="REGLA: prc_perf+ қал-62"> <!--білінбей қалмайды. -> görünmez olmaz-->
+<rule comment="REGLA: prc_perf+ қал-64"> <!--білінбей қалмайды. -> görünmez olmaz-->
       <pattern>
         <pattern-item n="prc_perf"/> 
         <pattern-item n="қал"/>
@@ -2514,7 +2567,7 @@
     </rule>
 
 
-<rule comment="REGLA: pres-63">
+<rule comment="REGLA: pres-65">
        <pattern>
         <pattern-item n="pres"/>    
       </pattern>
@@ -2537,7 +2590,7 @@
     </rule>
 
 
- <rule comment="REGLA: prc_perf+yat_pres-64">
+ <rule comment="REGLA: prc_perf+yat_pres-66">
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="yat_pres"/>
@@ -2564,7 +2617,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: prc_impf+yat_pres-65">
+<rule comment="REGLA: prc_impf+yat_pres-67">
       <pattern>
         <pattern-item n="prc_impf"/>
         <pattern-item n="yat_pres"/>
@@ -2595,7 +2648,7 @@
     </rule>
 
 
-<rule comment="REGLA: prc_perf+otyr_pres-66">
+<rule comment="REGLA: prc_perf+otyr_pres-68">
       <pattern>
         <pattern-item n="prc_perf"/>
         <pattern-item n="otyr_pres"/>
@@ -2622,7 +2675,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: cop-67">
+<rule comment="REGLA: cop-69">
       <pattern>
       <pattern-item n="cop"/>
       </pattern>
@@ -2657,10 +2710,11 @@
 
 
 
-<!--<rule comment="REGLA: adj+cop-68"> мүдделі  meraklı 
+<rule comment="REGLA: adj+cop-70"> <!--мүдделі  meraklı -->
+
       <pattern>
       <pattern-item n="adj"/>
-        <pattern-item n="cop"/>
+      <pattern-item n="cop"/>
       </pattern>
       <action>
 
@@ -2674,46 +2728,49 @@
     </when>
 </choose>
 
+<let>
+
+          <clip pos="1" side="tl" part="whole"/>
+
+          <concat><clip pos="1" side="tl" part="lem"/><lit-tag v="adj"/></concat>
+          
+        </let>
+
         <out>
 
-          <chunk name="v" case=
+          <chunk name="adj" case=
           "caseFirstWord">
             <tags>
-              <tag><lit-tag v="SV"/></tag>
+              <tag><lit-tag v="SADJ"/></tag>
             </tags>
-        
+          <mlu>
             <lu>
               <clip pos="1" side="tl" part="whole"/>
              </lu> 
-             
+             <lu>
+              <clip pos="2" side="tl" part="whole"/>
+            </lu>
+          </mlu>
+          
           </chunk>
         </out>
       </action>
-    </rule>-->
+    </rule>
 
-<rule comment="REGLA: adj+cop-68"> 
+
+<rule comment="REGLA: adj+cop-71"> 
       <pattern>
-      <pattern-item n="adj"/>
+        <pattern-item n="adj"/>
         <pattern-item n="cop"/>
       </pattern>
       <action>
 
-<choose>
-   <when>
-     
-      <test><equal><clip pos="2" side="tl" part="evid"/><lit-tag v="aor.evid"/></equal></test>
-                             
-        
-      <let><clip pos="2" side="tl" part="evid"/><lit-tag v="dub.aor"/></let>
-    </when>
-</choose>
 
-        <out>
-
-          <chunk name="v" case=
+         <out>
+          <chunk name="adj" case=
           "caseFirstWord">
             <tags>
-              <tag><lit-tag v="SV"/></tag>
+              <tag><lit-tag v="SADJ"/></tag>
             </tags>
            <mlu>
             <lu>
@@ -2732,7 +2789,7 @@
 
 
 
-<rule comment="REGLA: ifi-evid-69"> <!--болыпты -> oldu-->
+<rule comment="REGLA: ifi-evid-72"> <!--болыпты -> oldu-->
       <pattern>
       
         <pattern-item n="ifi-evid"/>
@@ -2771,7 +2828,7 @@
 
 
 
-<rule comment="REGLA: past-evid-70"> <!--деген екен -> demiş  not working yet-->
+<rule comment="REGLA: past-evid-73"> <!--деген екен -> demiş  not working yet-->
       <pattern>
       
         <pattern-item n="past-evid"/>
@@ -2806,7 +2863,7 @@
     </rule>
 
 
-<rule comment="REGLA: prc_vol+кел-71"> <!--қатысқысы келеді -> katılmak istedi -->
+<rule comment="REGLA: prc_vol+кел-74"> <!--қатысқысы келеді -> katılmak istedi -->
       <pattern>
       <pattern-item n="prc_vol"/> 
       <pattern-item n="кел"/>
@@ -2838,7 +2895,7 @@
       </action>
     </rule>
 
-<rule comment="REGLA: prc_cond+бол-72">
+<rule comment="REGLA: prc_cond+бол-75">
       <pattern>
         <pattern-item n="prc_cond"/>
         <pattern-item n="бол"/>
@@ -2859,7 +2916,6 @@
           
         </let>
 
- 
         <out>
           <chunk name="v" case="caseFirstWord">
             <tags>
@@ -2873,27 +2929,7 @@
       </action>
     </rule>
 
-
-
- <rule comment="REGLA: cop-neg -73"> <!-- емес -> değil-->
-      <pattern>
-        <pattern-item n="cop-neg"/>
-      </pattern>
-      <action>
-        <out>
-          <chunk name="sent" case="caseFirstWord">
-            <tags>
-              <tag><lit-tag v="SENT"/></tag>
-            </tags>
-            <lu>
-<lit v="değil"/><lit-tag v="adj"/>
-</lu>
-          </chunk>
-        </out>
-      </action>
-    </rule>
-
-<rule comment="REGLA: prc_perf-74" > <!--деп қуып жүреді -> deyip kovalor -->
+<rule comment="REGLA: prc_perf-76" > <!--деп қуып жүреді -> deyip kovalor -->
       <pattern>
         <pattern-item n="prc_perf"/>
       </pattern>
@@ -2915,7 +2951,27 @@
       </action>
     </rule>
 
-<rule comment="REGLA: cop-ger-past-75">  <!--  екенін -> olduğunu--> 
+
+ <rule comment="REGLA: cop-neg -77"> <!-- емес -> değil-->
+      <pattern>
+        <pattern-item n="cop-neg"/>
+      </pattern>
+      <action>
+        <out>
+          <chunk name="sent" case="caseFirstWord">
+            <tags>
+              <tag><lit-tag v="SENT"/></tag>
+            </tags>
+            <lu>
+<lit v="değil"/><lit-tag v="adj"/>
+</lu>
+          </chunk>
+        </out>
+      </action>
+    </rule>
+
+
+<rule comment="REGLA: cop-ger-past-78">  <!--  екенін -> olduğunu--> 
       <pattern>
         <pattern-item n="cop-ger-past"/>
       </pattern>
@@ -2938,7 +2994,7 @@
     </rule>
 
 
-<rule comment="REGLA: SENT-76">
+<rule comment="REGLA: SENT-79">
       <pattern>
         <pattern-item n="sent"/>
       </pattern>
