@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "../pugixml/pugixml.hpp"
+#include "RuleExecution.h"
 
 using namespace std;
 using namespace pugi;
@@ -44,30 +45,39 @@ public:
   static vector<string>
   getFilesInDir (string dir);
 
-  static void
-  runYasmet ();
+//  static void
+//  runYasmet ();
 
   static map<string, map<string, vector<float> > >
-  loadYasmetModels ();
+  loadYasmetModels (string modelsDest);
 
   static void
   handleDatasets ();
 
   static string
-  toLowerCase (string word);
+  toLowerCase (string word, string localeId);
+
+  static string
+  toUpperCase (string word, string localeId);
+
+  static string
+  FirLetUpperCase (string word, string localeId);
+
+  static int
+  compare (string word1, string word2);
+
+  static int
+  compareCaseless (string word1, string word2, string localeId);
 
   static void
-  beamSearch (
-      vector<pair<vector<unsigned>, float> > *beamTree,
-      unsigned beam,
-      vector<string> slTokens,
-      vector<pair<pair<unsigned, unsigned>, pair<unsigned, vector<vector<xml_node> > > > > ambigInfo,
-      map<string, map<string, vector<float> > > classesWeights);
+  beamSearch (vector<pair<vector<RuleExecution::Node>, float> > *beamTree, unsigned beam,
+	      vector<string> slTokens, vector<RuleExecution::AmbigInfo> ambigInfo,
+	      map<string, map<string, vector<float> > > classesWeights, string localeId);
 
   static void
-  getTransInds (vector<pair<unsigned, float> > *Translations,
+  getTransInds (vector<pair<unsigned, float> > *transInds,
 		vector<pair<vector<unsigned>, float> > beamTree,
-		vector<vector<unsigned> > weigInds);
+		vector<vector<pair<unsigned, unsigned> > > rulesIds);
 };
 
 #endif /* SRC_CLEXEC_H_ */

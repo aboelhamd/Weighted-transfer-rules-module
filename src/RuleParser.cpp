@@ -112,8 +112,9 @@ RuleParser::sentenceTokenizer (vector<string>* slTokens, vector<string>* tlToken
 }
 
 void
-RuleParser::matchCats (map<int, vector<string> >* catsApplied, vector<string> slTokens,
-		       vector<vector<string> > tags, xml_node transfer)
+RuleParser::matchCats (map<unsigned, vector<string> >* catsApplied,
+		       vector<string> slTokens, vector<vector<string> > tags,
+		       xml_node transfer)
 {
   xml_node section_def_cats = transfer.child (SECTION_DEF_CATS);
 
@@ -193,12 +194,14 @@ RuleParser::matchCats (map<int, vector<string> >* catsApplied, vector<string> sl
 }
 
 void
-RuleParser::matchRules (map<xml_node, vector<vector<int> > >* rulesApplied,
-			vector<string> slTokens, map<int, vector<string> > catsApplied,
-			xml_node transfer)
+RuleParser::matchRules (map<xml_node, vector<pair<unsigned, unsigned> > >* rulesApplied,
+			vector<string> slTokens,
+			map<unsigned, vector<string> > catsApplied, xml_node transfer)
 {
 
   xml_node section_rules = transfer.child (SECTION_RULES);
+
+  vector<unsigned> tokensApplied;
 
   for (xml_node rule = section_rules.child (RULE); rule; rule = rule.next_sibling ())
     {
@@ -217,7 +220,7 @@ RuleParser::matchRules (map<xml_node, vector<vector<int> > >* rulesApplied,
 	      && i <= slTokens.size () - pattern_items.size (); i++)
 	{
 
-	  vector<int> slMatchedTokens;
+	  vector<unsigned> slMatchedTokens;
 	  for (unsigned j = 0; j < pattern_items.size (); j++)
 	    {
 
@@ -239,12 +242,42 @@ RuleParser::matchRules (map<xml_node, vector<vector<int> > >* rulesApplied,
 	  // then this rule is matched
 	  if (slMatchedTokens.size () == pattern_items.size ())
 	    {
-	      (*rulesApplied)[rule].push_back (slMatchedTokens);
+	      if (slMatchedTokens.size () == 1)
+		tokensApplied.insert (tokensApplied.end (), slMatchedTokens.begin (),
+				      slMatchedTokens.end ());
+	      (*rulesApplied)[rule].push_back (
+		  pair<unsigned, unsigned> (slMatchedTokens[0], slMatchedTokens.size ()));
 	    }
 
 	}
 
     }
+
+  // set a default rule for tokens without rules applied
+  vector<pair<unsigned, unsigned> > tokensNotApp;
+  for (unsigned i = 0; i < slTokens.size (); i++)
+    {
+      bool found = false;
+      for (unsigned j = 0; j < tokensApplied.size (); j++)
+	{
+	  if (i == tokensApplied[j])
+	    {
+	      found = true;
+	      break;
+	    }
+	}
+      if (!found)
+	{
+//	  vector<unsigned> tokenNotApp;
+//	  tokenNotApp.push_back (i);
+//	  tokensNotApp.push_back (tokenNotApp);
+	  tokensNotApp.push_back (pair<unsigned, unsigned> (i, 1));
+	}
+    }
+
+  xml_node defaultRule;
+
+  (*rulesApplied)[defaultRule] = tokensNotApp;
 }
 
 // to sort attribute tags descendingly
@@ -292,4 +325,40 @@ RuleParser::getAttrs (xml_node transfer)
     }
 
   return attrs;
+}
+
+map<string, string>
+RuleParser::getVars (xml_node transfer)
+{
+  map<string, string> vars;
+
+  xml_node section_def_vars = transfer.child (SECTION_DEF_VARS);
+  for (xml_node def_var = section_def_vars.child (DEF_VAR); def_var;
+      def_var = def_var.next_sibling ())
+    {
+      vars[def_var.attribute (N).value ()] = def_var.attribute (V).value ();
+    }
+
+  return vars;
+}
+
+map<string, vector<string> >
+RuleParser::getLists (xml_node transfer)
+{
+  map<string, vector<string> > lists;
+
+  xml_node section_def_lists = transfer.child (SECTION_DEF_LISTS);
+  for (xml_node def_list = section_def_lists.child (DEF_LIST); def_list; def_list =
+      def_list.next_sibling ())
+    {
+      vector<string> list;
+      for (xml_node list_item = def_list.child (LIST_ITEM); list_item; list_item =
+	  list_item.next_sibling ())
+	{
+	  list.push_back (list_item.attribute (V).value ());
+	}
+      lists[def_list.attribute (N).value ()] = list;
+    }
+
+  return lists;
 }
