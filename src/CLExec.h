@@ -11,11 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "../pugixml/pugixml.hpp"
-#include "RuleExecution.h"
+#include "ambiguous_transfer.h"
 
 using namespace std;
-using namespace pugi;
 
 class CLExec {
 public:
@@ -69,9 +67,9 @@ public:
 	compareCaseless(string word1, string word2, string localeId);
 
 	static void
-	beamSearch(vector<pair<vector<RuleExecution::Node>, float> > *beamTree,
+	beamSearch(vector<pair<vector<ambiguous_transfer::Node>, float> > *beamTree,
 			unsigned beam, vector<string> slTokens,
-			vector<RuleExecution::AmbigInfo> ambigInfo,
+			vector<ambiguous_transfer::AmbigInfo> ambigInfo,
 			map<string, map<string, vector<float> > > classesWeights,
 			string localeId);
 

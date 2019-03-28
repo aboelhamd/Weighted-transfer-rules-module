@@ -27,10 +27,8 @@
 
 #include "CLExec.h"
 #include "TranElemLiterals.h"
-#include "../pugixml/pugixml.hpp"
 
 using namespace std;
-using namespace pugi;
 using namespace elem;
 
 string exec(string cmd) {
@@ -261,19 +259,19 @@ int CLExec::compareCaseless(string word1, string word2, string localeId) {
 }
 
 // to sort translations from best to worth by their weight
-bool sortParameter(pair<vector<RuleExecution::Node>, float> a,
-		pair<vector<RuleExecution::Node>, float> b) {
+bool sortParameter(pair<vector<ambiguous_transfer::Node>, float> a,
+		pair<vector<ambiguous_transfer::Node>, float> b) {
 	return (a.second > b.second);
 }
 
 void CLExec::beamSearch(
-		vector<pair<vector<RuleExecution::Node>, float> > *beamTree,
+		vector<pair<vector<ambiguous_transfer::Node>, float> > *beamTree,
 		unsigned beam, vector<string> slTokens,
-		vector<RuleExecution::AmbigInfo> ambigInfo,
+		vector<ambiguous_transfer::AmbigInfo> ambigInfo,
 		map<string, map<string, vector<float> > > classesWeights,
 		string localeId) {
 	// Initialization
-	(*beamTree).push_back(pair<vector<RuleExecution::Node>, float>());
+	(*beamTree).push_back(pair<vector<ambiguous_transfer::Node>, float>());
 
 	for (unsigned i = 0; i < ambigInfo.size(); i++) {
 //      for (unsigned x = 0; x < beamTree->size (); x++)
@@ -287,7 +285,7 @@ void CLExec::beamSearch(
 //	    }
 //	}
 
-		RuleExecution::AmbigInfo ambig = ambigInfo[i];
+		ambiguous_transfer::AmbigInfo ambig = ambigInfo[i];
 //      pair<pair<unsigned, unsigned>, pair<unsigned, vector<vector<unsigned> > > > p =
 //	  ambigInfo[i];
 //      pair<unsigned, unsigned> wordInd = p.first;
@@ -315,13 +313,13 @@ void CLExec::beamSearch(
 				+ ".model")];
 
 		// build new tree for the new words
-		vector<pair<vector<RuleExecution::Node>, float> > newTree;
+		vector<pair<vector<ambiguous_transfer::Node>, float> > newTree;
 
 		// initialize the new tree
 		for (unsigned x = 0; x < ambigRulesSize; x++) {
 			newTree.push_back(
-					pair<vector<RuleExecution::Node>, float>(
-							vector<RuleExecution::Node>(), 0));
+					pair<vector<ambiguous_transfer::Node>, float>(
+							vector<ambiguous_transfer::Node>(), 0));
 		}
 		// put rules
 		for (unsigned z = 0; z < ambigRulesSize; z++) {
@@ -364,7 +362,7 @@ void CLExec::beamSearch(
 		for (unsigned z = 0; z < ambigRulesSize - 1; z++) {
 			for (unsigned x = 0; x < initSize; x++) {
 				beamTree->push_back(
-						pair<vector<RuleExecution::Node>, float>(
+						pair<vector<ambiguous_transfer::Node>, float>(
 								(*beamTree)[x]));
 			}
 		}
