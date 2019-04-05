@@ -15,7 +15,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <algorithm>
-#include "TranElemLiterals.h"
+
+#include "transfer_literals.h"
 #include "xml_operations.h"
 
 using namespace std;

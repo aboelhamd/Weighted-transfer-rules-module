@@ -13,12 +13,12 @@
 #include <sys/time.h>
 #include <sstream>
 
-#include "TranElemLiterals.h"
 #include <omp.h>
 
 #include "ambiguous_chunker.h"
 #include "ambiguous_transfer.h"
 #include "case_handler.h"
+#include "transfer_literals.h"
 
 using namespace std;
 using namespace elem;
