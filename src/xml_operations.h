@@ -14,25 +14,34 @@
 
 using namespace std;
 
-class xml_operations {
+class xml_operations
+{
 
 public:
 
-	static xmlNode* getRoot(xmlNode* node);
+  static xmlNode*
+  getRoot (xmlNode* node);
 
-	static xmlNode* getFirstNext(xmlNode* node);
+  static xmlNode*
+  getFirstNext (xmlNode* node);
 
-	static xmlNode* getNext(xmlNode* node, string nextName);
+  static xmlNode*
+  getNext (xmlNode* node, string nextName);
 
-	static xmlNode* getFirstChild(xmlNode* parent);
+  static xmlNode*
+  getFirstChild (xmlNode* parent);
 
-	static xmlNode* getChild(xmlNode* parent, string childName);
+  static xmlNode*
+  getChild (xmlNode* parent, string childName);
 
-	static string getAttVal(xmlNode* node, string attrName);
+  static string
+  getAttVal (xmlNode* node, string attrName);
 
-	static unsigned getAttValUnsg(xmlNode* node, string attrName);
+  static unsigned
+  getAttValUnsg (xmlNode* node, string attrName);
 
-	static string getName(xmlNode* node);
+  static string
+  getName (xmlNode* node);
 };
 
 #endif /* SRC_XML_OPERATIONS_H_ */
