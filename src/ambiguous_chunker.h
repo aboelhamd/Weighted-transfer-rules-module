@@ -105,7 +105,7 @@ public:
 	    map<xmlNode*, vector<pair<unsigned, unsigned> > > rulesApplied,
 	    map<string, vector<vector<string> > > attrs,
 	    map<string, vector<string> > lists, map<string, string>* vars,
-	    vector<string> spaces, string localeId);
+	    vector<string> spaces);
 
   static void
   getOuts (vector<string>* finalOuts,
@@ -162,44 +162,40 @@ vector<string>
 ruleExe (xmlNode* rule, vector<vector<string> >* slAnalysisTokens,
 	 vector<vector<string> >* tlAnalysisTokens,
 	 map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-	 map<string, string>* vars, vector<string> spaces, unsigned firPat,
-	 string localeId);
+	 map<string, string>* vars, vector<string> spaces, unsigned firPat);
 
 vector<string>
 choose (xmlNode* choose, vector<vector<string> >* slAnalysisTokens,
 	vector<vector<string> >* tlAnalysisTokens,
 	map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
 	map<string, string>* vars, vector<string> spaces, unsigned firPat,
-	string localeId, map<unsigned, unsigned> paramToPattern);
+	map<unsigned, unsigned> paramToPattern);
 
 void
 let (xmlNode* let, vector<vector<string> >* slAnalysisTokens,
      vector<vector<string> >* tlAnalysisTokens,
      map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-     vector<string> spaces, unsigned firPat, string localeId,
-     map<unsigned, unsigned> paramToPattern);
+     vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern);
 
 vector<string>
 callMacro (xmlNode* callMacro, vector<vector<string> >* slAnalysisTokens,
 	   vector<vector<string> >* tlAnalysisTokens,
 	   map<string, vector<vector<string> > > attrs,
 	   map<string, vector<string> > lists, map<string, string>* vars,
-	   vector<string> spaces, unsigned firPat, string localeId,
+	   vector<string> spaces, unsigned firPat,
 	   map<unsigned, unsigned> paramToPattern);
 
 vector<string>
 out (xmlNode* out, vector<vector<string> >* slAnalysisTokens,
      vector<vector<string> >* tlAnalysisTokens,
      map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-     vector<string> spaces, unsigned firPat, string localeId,
-     map<unsigned, unsigned> paramToPattern);
+     vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern);
 
 vector<string>
 chunk (xmlNode* chunkNode, vector<vector<string> >* slAnalysisTokens,
        vector<vector<string> >* tlAnalysisTokens,
        map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-       vector<string> spaces, unsigned firPat, string localeId,
-       map<unsigned, unsigned> paramToPattern);
+       vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern);
 
 vector<string>
 formatTokenTags (string token, vector<string> tags);
@@ -211,58 +207,55 @@ vector<string>
 clip (xmlNode* clip, vector<vector<string> >* slAnalysisTokens,
       vector<vector<string> >* tlAnalysisTokens,
       map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-      vector<string> spaces, unsigned firPat, string localeId,
-      map<unsigned, unsigned> paramToPattern,
+      vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern,
       vector<vector<string> > tags = vector<vector<string> > ());
 
 vector<string>
 concat (xmlNode* concat, vector<vector<string> >* slAnalysisTokens,
 	vector<vector<string> >* tlAnalysisTokens,
 	map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-	vector<string> spaces, unsigned firPat, string localeId,
-	map<unsigned, unsigned> paramToPattern,
+	vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern,
 	vector<vector<string> > tags = vector<vector<string> > ());
 
 bool
 equal (xmlNode* equal, vector<vector<string> >* slAnalysisTokens,
        vector<vector<string> >* tlAnalysisTokens,
        map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-       vector<string> spaces, unsigned firPat, string localeId,
-       map<unsigned, unsigned> paramToPattern);
+       vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern);
 
 bool
 test (xmlNode* test, vector<vector<string> >* slAnalysisTokens,
       vector<vector<string> >* tlAnalysisTokens,
       map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-      map<string, string>* vars, vector<string> spaces, unsigned firPat, string localeId,
+      map<string, string>* vars, vector<string> spaces, unsigned firPat,
       map<unsigned, unsigned> paramToPattern);
 
 bool
 And (xmlNode* And, vector<vector<string> >* slAnalysisTokens,
      vector<vector<string> >* tlAnalysisTokens,
      map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-     map<string, string>* vars, vector<string> spaces, unsigned firPat, string localeId,
+     map<string, string>* vars, vector<string> spaces, unsigned firPat,
      map<unsigned, unsigned> paramToPattern);
 
 bool
 Or (xmlNode* Or, vector<vector<string> >* slAnalysisTokens,
     vector<vector<string> >* tlAnalysisTokens,
     map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-    map<string, string>* vars, vector<string> spaces, unsigned firPat, string localeId,
+    map<string, string>* vars, vector<string> spaces, unsigned firPat,
     map<unsigned, unsigned> paramToPattern);
 
 bool
 in (xmlNode* in, vector<vector<string> >* slAnalysisTokens,
     vector<vector<string> >* tlAnalysisTokens,
     map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-    map<string, string>* vars, vector<string> spaces, unsigned firPat, string localeId,
+    map<string, string>* vars, vector<string> spaces, unsigned firPat,
     map<unsigned, unsigned> paramToPattern);
 
 bool
 Not (xmlNode* Not, vector<vector<string> >* slAnalysisTokens,
      vector<vector<string> >* tlAnalysisTokens,
      map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-     map<string, string>* vars, vector<string> spaces, unsigned firPat, string localeId,
+     map<string, string>* vars, vector<string> spaces, unsigned firPat,
      map<unsigned, unsigned> paramToPattern);
 
 vector<string>
@@ -278,30 +271,29 @@ void
 append (xmlNode* append, vector<vector<string> >* slAnalysisTokens,
 	vector<vector<string> >* tlAnalysisTokens,
 	map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-	vector<string> spaces, unsigned firPat, string localeId,
-	map<unsigned, unsigned> paramToPattern);
+	vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern);
 
 string
-b (xmlNode* b, vector<string> spaces, unsigned firPat, string localeId,
+b (xmlNode* b, vector<string> spaces, unsigned firPat,
    map<unsigned, unsigned> paramToPattern);
 
 string
 caseOf (xmlNode* caseOf, vector<vector<string> >* slAnalysisTokens,
-	vector<vector<string> >* tlAnalysisTokens, string localeId,
+	vector<vector<string> >* tlAnalysisTokens,
 	map<unsigned, unsigned> paramToPattern);
 
 string
 getCaseFrom (xmlNode* getCaseFrom, vector<vector<string> >* slAnalysisTokens,
 	     vector<vector<string> >* tlAnalysisTokens,
 	     map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-	     vector<string> spaces, unsigned firPat, string localeId,
+	     vector<string> spaces, unsigned firPat,
 	     map<unsigned, unsigned> paramToPattern);
 
 void
 modifyCase (xmlNode* modifyCase, vector<vector<string> >* slAnalysisTokens,
 	    vector<vector<string> >* tlAnalysisTokens,
 	    map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-	    vector<string> spaces, unsigned firPat, string localeId,
+	    vector<string> spaces, unsigned firPat,
 	    map<unsigned, unsigned> paramToPattern);
 
 #endif /* SRC_AMBIGUOUS_CHUNKER_H_ */

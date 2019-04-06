@@ -861,7 +861,7 @@ ruleOuts (map<unsigned, map<unsigned, string> >* ruleOuts,
 	  vector<string> tlTokens, vector<vector<string> > tlTags,
 	  map<xmlNode*, vector<pair<unsigned, unsigned> > > rulesApplied,
 	  map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-	  map<string, string>* vars, vector<string> spaces, string localeId)
+	  map<string, string>* vars, vector<string> spaces)
 {
 
   for (map<xmlNode*, vector<pair<unsigned, unsigned> > >::iterator it =
@@ -898,7 +898,7 @@ ruleOuts (map<unsigned, map<unsigned, string> >* ruleOuts,
 	    output.push_back (noRuleOut (tlAnalysisTokens[0]));
 	  else
 	    output = ruleExe (rule, &slAnalysisTokens, &tlAnalysisTokens, attrs, lists,
-			      vars, spaces, firstMatTok, localeId); // first pattern index
+			      vars, spaces, firstMatTok); // first pattern index
 
 	  string str;
 	  for (unsigned j = 0; j < output.size (); j++)
@@ -919,7 +919,7 @@ AmbiguousChunker::ruleOuts (
     vector<vector<string> > tlTags,
     map<xmlNode*, vector<pair<unsigned, unsigned> > > rulesApplied,
     map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-    map<string, string>* vars, vector<string> spaces, string localeId)
+    map<string, string>* vars, vector<string> spaces)
 {
 
   for (map<xmlNode*, vector<pair<unsigned, unsigned> > >::iterator it =
@@ -956,7 +956,7 @@ AmbiguousChunker::ruleOuts (
 	    output.push_back (noRuleOut (tlAnalysisTokens[0]));
 	  else
 	    output = ruleExe (rule, &slAnalysisTokens, &tlAnalysisTokens, attrs, lists,
-			      vars, spaces, firstMatTok, localeId); // first pattern index
+			      vars, spaces, firstMatTok); // first pattern index
 
 	  string str;
 	  for (unsigned j = 0; j < output.size (); j++)
@@ -972,8 +972,7 @@ vector<string>
 ruleExe (xmlNode* rule, vector<vector<string> >* slAnalysisTokens,
 	 vector<vector<string> >* tlAnalysisTokens,
 	 map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-	 map<string, string>* vars, vector<string> spaces, unsigned firPat,
-	 string localeId)
+	 map<string, string>* vars, vector<string> spaces, unsigned firPat)
 {
 
   printNodeAttrs (rule);
@@ -993,31 +992,31 @@ ruleExe (xmlNode* rule, vector<vector<string> >* slAnalysisTokens,
       if (childName == LET)
 	{
 	  let (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces, firPat,
-	       localeId, paramToPattern);
+	       paramToPattern);
 	}
       else if (childName == CHOOSE)
 	{
 	  result = choose (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-			   spaces, firPat, localeId, paramToPattern);
+			   spaces, firPat, paramToPattern);
 	}
       else if (childName == CALL_MACRO)
 	{
 	  result = callMacro (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists,
-			      vars, spaces, firPat, localeId, paramToPattern);
+			      vars, spaces, firPat, paramToPattern);
 	}
       else if (childName == OUT)
 	{
 	  result = out (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-			firPat, localeId, paramToPattern);
+			firPat, paramToPattern);
 	}
 
       else if (childName == MODIFY_CASE)
 	modifyCase (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-		    firPat, localeId, paramToPattern);
+		    firPat, paramToPattern);
 
       else if (childName == APPEND)
 	append (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces, firPat,
-		localeId, paramToPattern);
+		paramToPattern);
 
       output.insert (output.end (), result.begin (), result.end ());
     }
@@ -1029,8 +1028,7 @@ vector<string>
 out (xmlNode* out, vector<vector<string> >* slAnalysisTokens,
      vector<vector<string> >* tlAnalysisTokens,
      map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-     vector<string> spaces, unsigned firPat, string localeId,
-     map<unsigned, unsigned> paramToPattern)
+     vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern)
 {
 
   printNodeAttrs (out);
@@ -1046,12 +1044,12 @@ out (xmlNode* out, vector<vector<string> >* slAnalysisTokens,
       string childName = xml_operations::getName (child);
       if (childName == B)
 	{
-	  result.push_back (b (child, spaces, firPat, localeId, paramToPattern));
+	  result.push_back (b (child, spaces, firPat, paramToPattern));
 	}
       else if (childName == CHUNK)
 	{
 	  result = chunk (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-			  firPat, localeId, paramToPattern);
+			  firPat, paramToPattern);
 	}
 
       output.insert (output.end (), result.begin (), result.end ());
@@ -1064,8 +1062,7 @@ vector<string>
 chunk (xmlNode* chunkNode, vector<vector<string> >* slAnalysisTokens,
        vector<vector<string> >* tlAnalysisTokens,
        map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-       vector<string> spaces, unsigned firPat, string localeId,
-       map<unsigned, unsigned> paramToPattern)
+       vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern)
 {
 
   printNodeAttrs (chunkNode);
@@ -1100,12 +1097,12 @@ chunk (xmlNode* chunkNode, vector<vector<string> >* slAnalysisTokens,
       if (childName == CLIP)
 	{
 	  result = clip (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-			 firPat, localeId, paramToPattern);
+			 firPat, paramToPattern);
 	}
       else if (childName == CONCAT)
 	{
 	  result = concat (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-			   firPat, localeId, paramToPattern);
+			   firPat, paramToPattern);
 	}
       else if (childName == LIT_TAG)
 	{
@@ -1117,19 +1114,18 @@ chunk (xmlNode* chunkNode, vector<vector<string> >* slAnalysisTokens,
 	}
       else if (childName == B)
 	{
-	  result.push_back (b (child, spaces, firPat, localeId, paramToPattern));
+	  result.push_back (b (child, spaces, firPat, paramToPattern));
 	}
       else if (childName == CASE_OF)
 	{
 	  result.push_back (
-	      caseOf (child, slAnalysisTokens, tlAnalysisTokens, localeId,
-		      paramToPattern));
+	      caseOf (child, slAnalysisTokens, tlAnalysisTokens, paramToPattern));
 	}
       else if (childName == GET_CASE_FROM)
 	{
 	  result.push_back (
 	      getCaseFrom (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-			   firPat, localeId, paramToPattern));
+			   firPat, paramToPattern));
 	}
       else if (childName == VAR)
 	{
@@ -1152,8 +1148,8 @@ chunk (xmlNode* chunkNode, vector<vector<string> >* slAnalysisTokens,
 	{
 	  // lu is the same as concat
 	  vector<string> result = concat (child, slAnalysisTokens, tlAnalysisTokens,
-					  attrs, vars, spaces, firPat, localeId,
-					  paramToPattern, tagsResult);
+					  attrs, vars, spaces, firPat, paramToPattern,
+					  tagsResult);
 	  output.push_back ("^");
 	  output.insert (output.end (), result.begin (), result.end ());
 	  output.push_back ("$");
@@ -1166,8 +1162,8 @@ chunk (xmlNode* chunkNode, vector<vector<string> >* slAnalysisTokens,
 	      xml_operations::getFirstNext (lu))
 	    {
 	      vector<string> result = concat (lu, slAnalysisTokens, tlAnalysisTokens,
-					      attrs, vars, spaces, firPat, localeId,
-					      paramToPattern, tagsResult);
+					      attrs, vars, spaces, firPat, paramToPattern,
+					      tagsResult);
 	      output.insert (output.end (), result.begin (), result.end ());
 	      if (xml_operations::getFirstNext (lu))
 		output.push_back ("+");
@@ -1176,7 +1172,7 @@ chunk (xmlNode* chunkNode, vector<vector<string> >* slAnalysisTokens,
 	}
       else if (childName == B)
 	{
-	  output.push_back (b (child, spaces, firPat, localeId, paramToPattern));
+	  output.push_back (b (child, spaces, firPat, paramToPattern));
 	}
     }
 
@@ -1190,8 +1186,7 @@ callMacro (xmlNode* callMacroNode, vector<vector<string> >* slAnalysisTokens,
 	   vector<vector<string> >* tlAnalysisTokens,
 	   map<string, vector<vector<string> > > attrs,
 	   map<string, vector<string> > lists, map<string, string>* vars,
-	   vector<string> spaces, unsigned firPat, string localeId,
-	   map<unsigned, unsigned> paramToPattern)
+	   vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern)
 {
 
   printNodeAttrs (callMacroNode);
@@ -1232,27 +1227,27 @@ callMacro (xmlNode* callMacroNode, vector<vector<string> >* slAnalysisTokens,
       string childName = xml_operations::getName (child);
       if (childName == CHOOSE)
 	result = choose (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-			 spaces, firPat, localeId, newParamToPattern);
+			 spaces, firPat, newParamToPattern);
 
       else if (childName == OUT)
 	result = out (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-		      firPat, localeId, newParamToPattern);
+		      firPat, newParamToPattern);
 
       else if (childName == CALL_MACRO)
 	result = callMacro (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-			    spaces, firPat, localeId, newParamToPattern);
+			    spaces, firPat, newParamToPattern);
 
       else if (childName == LET)
 	let (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces, firPat,
-	     localeId, newParamToPattern);
+	     newParamToPattern);
 
       else if (childName == MODIFY_CASE)
 	modifyCase (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-		    firPat, localeId, newParamToPattern);
+		    firPat, newParamToPattern);
 
       else if (childName == APPEND)
 	append (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces, firPat,
-		localeId, newParamToPattern);
+		newParamToPattern);
 
       output.insert (output.end (), result.begin (), result.end ());
     }
@@ -1295,8 +1290,7 @@ bool
 equal (xmlNode* equal, vector<vector<string> >* slAnalysisTokens,
        vector<vector<string> >* tlAnalysisTokens,
        map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-       vector<string> spaces, unsigned firPat, string localeId,
-       map<unsigned, unsigned> paramToPattern)
+       vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern)
 {
 
   printNodeAttrs (equal);
@@ -1308,12 +1302,12 @@ equal (xmlNode* equal, vector<vector<string> >* slAnalysisTokens,
   if (firstName == CLIP)
     {
       firstResult = clip (firstChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-			  spaces, firPat, localeId, paramToPattern);
+			  spaces, firPat, paramToPattern);
     }
   else if (firstName == CONCAT)
     {
       firstResult = concat (firstChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-			    spaces, firPat, localeId, paramToPattern);
+			    spaces, firPat, paramToPattern);
     }
   else if (firstName == LIT_TAG)
     {
@@ -1325,19 +1319,18 @@ equal (xmlNode* equal, vector<vector<string> >* slAnalysisTokens,
     }
   else if (firstName == B)
     {
-      firstResult.push_back (b (firstChild, spaces, firPat, localeId, paramToPattern));
+      firstResult.push_back (b (firstChild, spaces, firPat, paramToPattern));
     }
   else if (firstName == CASE_OF)
     {
       firstResult.push_back (
-	  caseOf (firstChild, slAnalysisTokens, tlAnalysisTokens, localeId,
-		  paramToPattern));
+	  caseOf (firstChild, slAnalysisTokens, tlAnalysisTokens, paramToPattern));
     }
   else if (firstName == GET_CASE_FROM)
     {
       firstResult.push_back (
 	  getCaseFrom (firstChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-		       spaces, firPat, localeId, paramToPattern));
+		       spaces, firPat, paramToPattern));
     }
   else if (firstName == VAR)
     {
@@ -1351,12 +1344,12 @@ equal (xmlNode* equal, vector<vector<string> >* slAnalysisTokens,
   if (secondName == CLIP)
     {
       secondResult = clip (secondChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-			   spaces, firPat, localeId, paramToPattern);
+			   spaces, firPat, paramToPattern);
     }
   else if (secondName == CONCAT)
     {
       secondResult = concat (secondChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-			     spaces, firPat, localeId, paramToPattern);
+			     spaces, firPat, paramToPattern);
     }
   else if (secondName == LIT_TAG)
     {
@@ -1368,19 +1361,18 @@ equal (xmlNode* equal, vector<vector<string> >* slAnalysisTokens,
     }
   else if (secondName == B)
     {
-      secondResult.push_back (b (secondChild, spaces, firPat, localeId, paramToPattern));
+      secondResult.push_back (b (secondChild, spaces, firPat, paramToPattern));
     }
   else if (secondName == CASE_OF)
     {
       secondResult.push_back (
-	  caseOf (secondChild, slAnalysisTokens, tlAnalysisTokens, localeId,
-		  paramToPattern));
+	  caseOf (secondChild, slAnalysisTokens, tlAnalysisTokens, paramToPattern));
     }
   else if (secondName == GET_CASE_FROM)
     {
       secondResult.push_back (
 	  getCaseFrom (secondChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-		       spaces, firPat, localeId, paramToPattern));
+		       spaces, firPat, paramToPattern));
     }
   else if (secondName == VAR)
     {
@@ -1412,7 +1404,7 @@ choose (xmlNode* chooseNode, vector<vector<string> >* slAnalysisTokens,
 	vector<vector<string> >* tlAnalysisTokens,
 	map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
 	map<string, string>* vars, vector<string> spaces, unsigned firPat,
-	string localeId, map<unsigned, unsigned> paramToPattern)
+	map<unsigned, unsigned> paramToPattern)
 {
   printNodeAttrs (chooseNode);
 
@@ -1429,7 +1421,7 @@ choose (xmlNode* chooseNode, vector<vector<string> >* slAnalysisTokens,
 	  xmlNode* testNode = xml_operations::getChild (child, TEST);
 
 	  condition = test (testNode, slAnalysisTokens, tlAnalysisTokens, attrs, lists,
-			    vars, spaces, firPat, localeId, paramToPattern);
+			    vars, spaces, firPat, paramToPattern);
 	}
       else
 	{
@@ -1447,28 +1439,27 @@ choose (xmlNode* chooseNode, vector<vector<string> >* slAnalysisTokens,
 	      string instName = xml_operations::getName (inst);
 	      if (instName == CHOOSE)
 		result = choose (inst, slAnalysisTokens, tlAnalysisTokens, attrs, lists,
-				 vars, spaces, firPat, localeId, paramToPattern);
+				 vars, spaces, firPat, paramToPattern);
 
 	      else if (instName == OUT)
 		result = out (inst, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-			      spaces, firPat, localeId, paramToPattern);
+			      spaces, firPat, paramToPattern);
 
 	      else if (instName == CALL_MACRO)
 		result = callMacro (inst, slAnalysisTokens, tlAnalysisTokens, attrs,
-				    lists, vars, spaces, firPat, localeId,
-				    paramToPattern);
+				    lists, vars, spaces, firPat, paramToPattern);
 
 	      else if (instName == LET)
 		let (inst, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-		     firPat, localeId, paramToPattern);
+		     firPat, paramToPattern);
 
 	      else if (instName == MODIFY_CASE)
 		modifyCase (inst, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-			    firPat, localeId, paramToPattern);
+			    firPat, paramToPattern);
 
 	      else if (instName == APPEND)
 		append (inst, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-			firPat, localeId, paramToPattern);
+			firPat, paramToPattern);
 
 	      output.insert (output.end (), result.begin (), result.end ());
 	    }
@@ -1483,7 +1474,7 @@ bool
 test (xmlNode* test, vector<vector<string> >* slAnalysisTokens,
       vector<vector<string> >* tlAnalysisTokens,
       map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-      map<string, string>* vars, vector<string> spaces, unsigned firPat, string localeId,
+      map<string, string>* vars, vector<string> spaces, unsigned firPat,
       map<unsigned, unsigned> paramToPattern)
 {
 
@@ -1497,27 +1488,27 @@ test (xmlNode* test, vector<vector<string> >* slAnalysisTokens,
   if (childName == EQUAL)
     {
       condition = equal (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-			 firPat, localeId, paramToPattern);
+			 firPat, paramToPattern);
     }
   else if (childName == AND)
     {
       condition = And (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-		       spaces, firPat, localeId, paramToPattern);
+		       spaces, firPat, paramToPattern);
     }
   else if (childName == OR)
     {
       condition = Or (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-		      spaces, firPat, localeId, paramToPattern);
+		      spaces, firPat, paramToPattern);
     }
   else if (childName == NOT)
     {
       condition = Not (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-		       spaces, firPat, localeId, paramToPattern);
+		       spaces, firPat, paramToPattern);
     }
   else if (childName == IN)
     {
       condition = in (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-		      spaces, firPat, localeId, paramToPattern);
+		      spaces, firPat, paramToPattern);
     }
 
   return condition;
@@ -1527,7 +1518,7 @@ bool
 And (xmlNode* andNode, vector<vector<string> >* slAnalysisTokens,
      vector<vector<string> >* tlAnalysisTokens,
      map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-     map<string, string>* vars, vector<string> spaces, unsigned firPat, string localeId,
+     map<string, string>* vars, vector<string> spaces, unsigned firPat,
      map<unsigned, unsigned> paramToPattern)
 {
 
@@ -1542,27 +1533,27 @@ And (xmlNode* andNode, vector<vector<string> >* slAnalysisTokens,
       if (childName == EQUAL)
 	{
 	  condition = equal (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-			     spaces, firPat, localeId, paramToPattern);
+			     spaces, firPat, paramToPattern);
 	}
       else if (childName == AND)
 	{
 	  condition = And (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-			   spaces, firPat, localeId, paramToPattern);
+			   spaces, firPat, paramToPattern);
 	}
       else if (childName == OR)
 	{
 	  condition = Or (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-			  spaces, firPat, localeId, paramToPattern);
+			  spaces, firPat, paramToPattern);
 	}
       else if (childName == NOT)
 	{
 	  condition = Not (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-			   spaces, firPat, localeId, paramToPattern);
+			   spaces, firPat, paramToPattern);
 	}
       else if (childName == IN)
 	{
 	  condition = in (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-			  spaces, firPat, localeId, paramToPattern);
+			  spaces, firPat, paramToPattern);
 	}
 
       if (!condition)
@@ -1576,7 +1567,7 @@ bool
 Or (xmlNode* orNode, vector<vector<string> >* slAnalysisTokens,
     vector<vector<string> >* tlAnalysisTokens,
     map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-    map<string, string>* vars, vector<string> spaces, unsigned firPat, string localeId,
+    map<string, string>* vars, vector<string> spaces, unsigned firPat,
     map<unsigned, unsigned> paramToPattern)
 {
 
@@ -1591,27 +1582,27 @@ Or (xmlNode* orNode, vector<vector<string> >* slAnalysisTokens,
       if (childName == EQUAL)
 	{
 	  condition = equal (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-			     spaces, firPat, localeId, paramToPattern);
+			     spaces, firPat, paramToPattern);
 	}
       else if (childName == AND)
 	{
 	  condition = And (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-			   spaces, firPat, localeId, paramToPattern);
+			   spaces, firPat, paramToPattern);
 	}
       else if (childName == OR)
 	{
 	  condition = Or (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-			  spaces, firPat, localeId, paramToPattern);
+			  spaces, firPat, paramToPattern);
 	}
       else if (childName == NOT)
 	{
 	  condition = Not (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-			   spaces, firPat, localeId, paramToPattern);
+			   spaces, firPat, paramToPattern);
 	}
       else if (childName == IN)
 	{
 	  condition = in (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-			  spaces, firPat, localeId, paramToPattern);
+			  spaces, firPat, paramToPattern);
 	}
 
       if (condition)
@@ -1625,7 +1616,7 @@ bool
 in (xmlNode* inNode, vector<vector<string> >* slAnalysisTokens,
     vector<vector<string> >* tlAnalysisTokens,
     map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-    map<string, string>* vars, vector<string> spaces, unsigned firPat, string localeId,
+    map<string, string>* vars, vector<string> spaces, unsigned firPat,
     map<unsigned, unsigned> paramToPattern)
 {
 
@@ -1638,12 +1629,12 @@ in (xmlNode* inNode, vector<vector<string> >* slAnalysisTokens,
   if (firstName == CLIP)
     {
       firstResult = clip (firstChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-			  spaces, firPat, localeId, paramToPattern);
+			  spaces, firPat, paramToPattern);
     }
   else if (firstName == CONCAT)
     {
       firstResult = concat (firstChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-			    spaces, firPat, localeId, paramToPattern);
+			    spaces, firPat, paramToPattern);
     }
   else if (firstName == LIT_TAG)
     {
@@ -1655,19 +1646,18 @@ in (xmlNode* inNode, vector<vector<string> >* slAnalysisTokens,
     }
   else if (firstName == B)
     {
-      firstResult.push_back (b (firstChild, spaces, firPat, localeId, paramToPattern));
+      firstResult.push_back (b (firstChild, spaces, firPat, paramToPattern));
     }
   else if (firstName == CASE_OF)
     {
       firstResult.push_back (
-	  caseOf (firstChild, slAnalysisTokens, tlAnalysisTokens, localeId,
-		  paramToPattern));
+	  caseOf (firstChild, slAnalysisTokens, tlAnalysisTokens, paramToPattern));
     }
   else if (firstName == GET_CASE_FROM)
     {
       firstResult.push_back (
 	  getCaseFrom (firstChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-		       spaces, firPat, localeId, paramToPattern));
+		       spaces, firPat, paramToPattern));
     }
   else if (firstName == VAR)
     {
@@ -1709,7 +1699,7 @@ bool
 Not (xmlNode* NotNode, vector<vector<string> >* slAnalysisTokens,
      vector<vector<string> >* tlAnalysisTokens,
      map<string, vector<vector<string> > > attrs, map<string, vector<string> > lists,
-     map<string, string>* vars, vector<string> spaces, unsigned firPat, string localeId,
+     map<string, string>* vars, vector<string> spaces, unsigned firPat,
      map<unsigned, unsigned> paramToPattern)
 {
 
@@ -1723,27 +1713,27 @@ Not (xmlNode* NotNode, vector<vector<string> >* slAnalysisTokens,
   if (childName == EQUAL)
     {
       condition = equal (child, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-			 firPat, localeId, paramToPattern);
+			 firPat, paramToPattern);
     }
   else if (childName == AND)
     {
       condition = And (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-		       spaces, firPat, localeId, paramToPattern);
+		       spaces, firPat, paramToPattern);
     }
   else if (childName == OR)
     {
       condition = Or (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-		      spaces, firPat, localeId, paramToPattern);
+		      spaces, firPat, paramToPattern);
     }
   else if (childName == NOT)
     {
       condition = Not (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-		       spaces, firPat, localeId, paramToPattern);
+		       spaces, firPat, paramToPattern);
     }
   else if (childName == IN)
     {
       condition = in (child, slAnalysisTokens, tlAnalysisTokens, attrs, lists, vars,
-		      spaces, firPat, localeId, paramToPattern);
+		      spaces, firPat, paramToPattern);
     }
 
   return !condition;
@@ -1797,8 +1787,7 @@ void
 let (xmlNode* let, vector<vector<string> >* slAnalysisTokens,
      vector<vector<string> >* tlAnalysisTokens,
      map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-     vector<string> spaces, unsigned firPat, string localeId,
-     map<unsigned, unsigned> paramToPattern)
+     vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern)
 {
 
   printNodeAttrs (let);
@@ -1812,12 +1801,12 @@ let (xmlNode* let, vector<vector<string> >* slAnalysisTokens,
   if (secondName == CLIP)
     {
       secondResult = clip (secondChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-			   spaces, firPat, localeId, paramToPattern);
+			   spaces, firPat, paramToPattern);
     }
   else if (secondName == CONCAT)
     {
       secondResult = concat (secondChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-			     spaces, firPat, localeId, paramToPattern);
+			     spaces, firPat, paramToPattern);
     }
   else if (secondName == LIT_TAG)
     {
@@ -1829,19 +1818,18 @@ let (xmlNode* let, vector<vector<string> >* slAnalysisTokens,
     }
   else if (secondName == B)
     {
-      secondResult.push_back (b (secondChild, spaces, firPat, localeId, paramToPattern));
+      secondResult.push_back (b (secondChild, spaces, firPat, paramToPattern));
     }
   else if (secondName == CASE_OF)
     {
       secondResult.push_back (
-	  caseOf (secondChild, slAnalysisTokens, tlAnalysisTokens, localeId,
-		  paramToPattern));
+	  caseOf (secondChild, slAnalysisTokens, tlAnalysisTokens, paramToPattern));
     }
   else if (secondName == GET_CASE_FROM)
     {
       secondResult.push_back (
 	  getCaseFrom (secondChild, slAnalysisTokens, tlAnalysisTokens, attrs, vars,
-		       spaces, firPat, localeId, paramToPattern));
+		       spaces, firPat, paramToPattern));
     }
   else if (secondName == VAR)
     {
@@ -1861,8 +1849,7 @@ let (xmlNode* let, vector<vector<string> >* slAnalysisTokens,
   else if (firstName == CLIP)
     {
       vector<string> firstResult = clip (firstChild, slAnalysisTokens, tlAnalysisTokens,
-					 attrs, vars, spaces, firPat, localeId,
-					 paramToPattern);
+					 attrs, vars, spaces, firPat, paramToPattern);
       if (firstResult.empty ())
 	return;
 
@@ -1914,8 +1901,8 @@ vector<string>
 clip (xmlNode* clip, vector<vector<string> >* slAnalysisTokens,
       vector<vector<string> >* tlAnalysisTokens,
       map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-      vector<string> spaces, unsigned firPat, string localeId,
-      map<unsigned, unsigned> paramToPattern, vector<vector<string> > tags)
+      vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern,
+      vector<vector<string> > tags)
 {
 
   printNodeAttrs (clip);
@@ -1992,8 +1979,8 @@ vector<string>
 concat (xmlNode* concat, vector<vector<string> >* slAnalysisTokens,
 	vector<vector<string> >* tlAnalysisTokens,
 	map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-	vector<string> spaces, unsigned firPat, string localeId,
-	map<unsigned, unsigned> paramToPattern, vector<vector<string> > tags)
+	vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern,
+	vector<vector<string> > tags)
 {
 
   printNodeAttrs (concat);
@@ -2009,7 +1996,7 @@ concat (xmlNode* concat, vector<vector<string> >* slAnalysisTokens,
       if (nodeName == CLIP)
 	{
 	  result = clip (node, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-			 firPat, localeId, paramToPattern, tags);
+			 firPat, paramToPattern, tags);
 	}
       else if (nodeName == LIT_TAG)
 	{
@@ -2023,17 +2010,16 @@ concat (xmlNode* concat, vector<vector<string> >* slAnalysisTokens,
 	{
 	  result.push_back (
 	      getCaseFrom (node, slAnalysisTokens, tlAnalysisTokens, attrs, vars, spaces,
-			   firPat, localeId, paramToPattern));
+			   firPat, paramToPattern));
 	}
       else if (nodeName == CASE_OF)
 	{
 	  result.push_back (
-	      caseOf (node, slAnalysisTokens, tlAnalysisTokens, localeId,
-		      paramToPattern));
+	      caseOf (node, slAnalysisTokens, tlAnalysisTokens, paramToPattern));
 	}
       else if (nodeName == B)
 	{
-	  result.push_back (b (node, spaces, firPat, localeId, paramToPattern));
+	  result.push_back (b (node, spaces, firPat, paramToPattern));
 	}
       else if (nodeName == VAR)
 	{
@@ -2050,8 +2036,7 @@ void
 append (xmlNode* append, vector<vector<string> >* slAnalysisTokens,
 	vector<vector<string> >* tlAnalysisTokens,
 	map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-	vector<string> spaces, unsigned firPat, string localeId,
-	map<unsigned, unsigned> paramToPattern)
+	vector<string> spaces, unsigned firPat, map<unsigned, unsigned> paramToPattern)
 {
 
   printNodeAttrs (append);
@@ -2067,8 +2052,7 @@ append (xmlNode* append, vector<vector<string> >* slAnalysisTokens,
       if (childName == CLIP)
 	{
 	  vector<string> clipResult = clip (child, slAnalysisTokens, tlAnalysisTokens,
-					    attrs, vars, spaces, firPat, localeId,
-					    paramToPattern);
+					    attrs, vars, spaces, firPat, paramToPattern);
 	  result.insert (result.end (), clipResult.begin (), clipResult.end ());
 	}
       else if (childName == LIT_TAG)
@@ -2089,26 +2073,26 @@ append (xmlNode* append, vector<vector<string> >* slAnalysisTokens,
       else if (childName == CONCAT)
 	{
 	  vector<string> concatResult = concat (child, slAnalysisTokens, tlAnalysisTokens,
-						attrs, vars, spaces, firPat, localeId,
+						attrs, vars, spaces, firPat,
 						paramToPattern);
 	  result.insert (result.end (), concatResult.begin (), concatResult.end ());
 	}
       else if (childName == B)
 	{
-	  string bResult = b (child, spaces, firPat, localeId, paramToPattern);
+	  string bResult = b (child, spaces, firPat, paramToPattern);
 	  result.push_back (bResult);
 	}
       else if (childName == GET_CASE_FROM)
 	{
 	  string getCaseFromResult = getCaseFrom (child, slAnalysisTokens,
 						  tlAnalysisTokens, attrs, vars, spaces,
-						  firPat, localeId, paramToPattern);
+						  firPat, paramToPattern);
 	  result.push_back (getCaseFromResult);
 	}
       else if (childName == CASE_OF)
 	{
 	  string caseOfResult = caseOf (child, slAnalysisTokens, tlAnalysisTokens,
-					localeId, paramToPattern);
+					paramToPattern);
 	  result.push_back (caseOfResult);
 	}
 
@@ -2123,7 +2107,7 @@ append (xmlNode* append, vector<vector<string> >* slAnalysisTokens,
 }
 
 string
-b (xmlNode* b, vector<string> spaces, unsigned firPat, string localeId,
+b (xmlNode* b, vector<string> spaces, unsigned firPat,
    map<unsigned, unsigned> paramToPattern)
 {
 
@@ -2149,8 +2133,7 @@ b (xmlNode* b, vector<string> spaces, unsigned firPat, string localeId,
 
 string
 caseOf (xmlNode* caseOf, vector<vector<string> >* slAnalysisTokens,
-	vector<vector<string> >* tlAnalysisTokens, string localeId,
-	map<unsigned, unsigned> paramToPattern)
+	vector<vector<string> >* tlAnalysisTokens, map<unsigned, unsigned> paramToPattern)
 {
 
   printNodeAttrs (caseOf);
@@ -2189,7 +2172,7 @@ string
 getCaseFrom (xmlNode* getCaseFrom, vector<vector<string> >* slAnalysisTokens,
 	     vector<vector<string> >* tlAnalysisTokens,
 	     map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-	     vector<string> spaces, unsigned firPat, string localeId,
+	     vector<string> spaces, unsigned firPat,
 	     map<unsigned, unsigned> paramToPattern)
 {
 
@@ -2216,7 +2199,7 @@ getCaseFrom (xmlNode* getCaseFrom, vector<vector<string> >* slAnalysisTokens,
   else if (childName == CLIP)
     {
       vector<string> clipResult = clip (child, slAnalysisTokens, tlAnalysisTokens, attrs,
-					vars, spaces, firPat, localeId, paramToPattern);
+					vars, spaces, firPat, paramToPattern);
 
       for (unsigned i = 0; i < clipResult.size (); i++)
 	{
@@ -2240,7 +2223,7 @@ void
 modifyCase (xmlNode* modifyCase, vector<vector<string> >* slAnalysisTokens,
 	    vector<vector<string> >* tlAnalysisTokens,
 	    map<string, vector<vector<string> > > attrs, map<string, string>* vars,
-	    vector<string> spaces, unsigned firPat, string localeId,
+	    vector<string> spaces, unsigned firPat,
 	    map<unsigned, unsigned> paramToPattern)
 {
 

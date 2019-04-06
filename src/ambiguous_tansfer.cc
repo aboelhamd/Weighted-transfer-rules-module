@@ -42,9 +42,8 @@ AmbiguousTransfer::transfer (string transferFilePath, string modelsFileDest, str
   map<string, string> vars = AmbiguousChunker::getVars (transfer);
   map<string, vector<string> > lists = AmbiguousChunker::getLists (transfer);
 
-  string localeId;
   map<string, map<string, vector<float> > > classesWeights = loadYasmetModels (
-      modelsFileDest, &localeId);
+      modelsFileDest);
 
   int beam;
   stringstream buffer (k);
@@ -86,8 +85,7 @@ AmbiguousTransfer::transfer (string transferFilePath, string modelsFileDest, str
       map<unsigned, vector<pair<unsigned, unsigned> > > tokenRules;
 
       AmbiguousChunker::ruleOuts (&ruleOutputs, &tokenRules, slTokens, slTags, tlTokens,
-				  tlTags, rulesApplied, attrs, lists, &vars, spaces,
-				  localeId);
+				  tlTags, rulesApplied, attrs, lists, &vars, spaces);
 
       // final outputs
       vector<string> outs;
@@ -111,7 +109,7 @@ AmbiguousTransfer::transfer (string transferFilePath, string modelsFileDest, str
 	if (ambigInfo[j].combinations.size () > 1)
 	  newAmbigInfo.push_back (ambigInfo[j]);
 
-      beamSearch (&beamTree, beam, slTokens, newAmbigInfo, classesWeights, localeId);
+      beamSearch (&beamTree, beam, slTokens, newAmbigInfo, classesWeights);
 
       AmbiguousChunker::getOuts (&outs, &combNodes, beamTree, nodesPool, ruleOutputs,
 				 spaces);
@@ -136,7 +134,7 @@ sortParameter (pair<vector<AmbiguousChunker::Node>, float> a,
 void
 beamSearch (vector<pair<vector<AmbiguousChunker::Node>, float> > *beamTree, unsigned beam,
 	    vector<string> slTokens, vector<AmbiguousChunker::AmbigInfo> ambigInfo,
-	    map<string, map<string, vector<float> > > classesWeights, string localeId)
+	    map<string, map<string, vector<float> > > classesWeights)
 {
   // Initialization
   (*beamTree).push_back (pair<vector<AmbiguousChunker::Node>, float> ());
@@ -255,7 +253,7 @@ beamSearch (vector<pair<vector<AmbiguousChunker::Node>, float> > *beamTree, unsi
 }
 
 map<string, map<string, vector<float> > >
-loadYasmetModels (string modelsFilePath, string *localeid)
+loadYasmetModels (string modelsFilePath)
 {
   // map with key yasmet model name and the value is
   // another map with key word name and the value is
@@ -269,8 +267,8 @@ loadYasmetModels (string modelsFilePath, string *localeid)
       string line, model, token, weight;
 
       // localeid
-      getline (modelsFile, line);
-      *localeid = line;
+//      getline (modelsFile, line);
+//      *localeid = line;
 
       while (getline (modelsFile, line))
 	{
@@ -303,47 +301,4 @@ loadYasmetModels (string modelsFilePath, string *localeid)
     }
 
   return classWeights;
-}
-
-FILE *
-open_input (string const &filename)
-{
-  FILE *input = fopen (filename.c_str (), "r");
-  if (!input)
-    {
-      wcerr << "Error: can't open input file '";
-      wcerr << filename.c_str () << "'." << endl;
-      exit (EXIT_FAILURE);
-    }
-
-  return input;
-}
-
-FILE *
-open_output (string const &filename)
-{
-  FILE *output = fopen (filename.c_str (), "w");
-  if (!output)
-    {
-      wcerr << "Error: can't open output file '";
-      wcerr << filename.c_str () << "'." << endl;
-      exit (EXIT_FAILURE);
-    }
-  return output;
-}
-
-int
-main (int argc, char **argv)
-{
-  string transferFilePath =
-      "/home/aboelhamd/eclipse-workspace/machinetranslation/apertium-eng-spa.spa-eng.t1x";
-  string modelsFileDest = "nomodel";
-  string k = "8";
-  string lextor = "lex.txt";
-  string out = "out.txt";
-
-  FILE *input = stdin, *output = stdout;
-  input = open_input (lextor);
-  output = open_output (out);
-  AmbiguousTransfer::transfer (transferFilePath, modelsFileDest, k, input, output);
 }
