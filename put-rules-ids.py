@@ -1,7 +1,7 @@
 import sys
 
 if (len(sys.argv) < 3) :
-	print('Usage: python put-ids.py <original transfer file name> <new transfer file name>');
+	print('Usage: python put-ids.py original_transfer_file new_transfer_file');
 	sys.exit(-1)
 
 oldfile = open(sys.argv[1], 'r')

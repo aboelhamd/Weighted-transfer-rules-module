@@ -266,10 +266,6 @@ loadYasmetModels (string modelsFilePath)
     {
       string line, model, token, weight;
 
-      // localeid
-//      getline (modelsFile, line);
-//      *localeid = line;
-
       while (getline (modelsFile, line))
 	{
 	  // 0=>word , 1=>rule_num & 2=>wieght
