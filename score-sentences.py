@@ -1,19 +1,18 @@
 import sys
 import kenlm
 
-# Load the language model
-#LM = os.path.join(os.path.dirname('/home/sevilay/apertium-kaz-tur-mt/scripts/training.klm'), '..', 'scripts', 'training.klm')
-
-if len(sys.argv) != 2:
-	print('Usage: score-sentences.py <language model>');
+if (len(sys.argv) < 4) :
+	print('Usage: python score-sentences.py arpa_or_binary_LM_file target_lang_file weights_file');
 	sys.exit(-1)
 
-LM = sys.argv[1]
+targetfile = open(sys.argv[2], 'r')
+weightfile = open(sys.argv[3], 'w')
 
+# Load the language model
 model = kenlm.LanguageModel(sys.argv[1])
 
-#Score each sentence in stdin
-for line in sys.stdin:
-	line = line.strip('\n')
-	print ('%.4f\t%s' % (model.score(line), line))
+for sentence in targetfile:
+	weightfile.write('%f\n' % (1.0/model.score(sentence)))
 
+targetfile.close()
+weightfile.close()
