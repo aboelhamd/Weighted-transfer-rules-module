@@ -1,10 +1,3 @@
-/*
- * RuleExecution.cpp
- *
- *  Created on: May 5, 2018
- *      Author: aboelhamd
- */
-
 #include <string>
 #include <map>
 #include <vector>
@@ -13,7 +6,8 @@
 #include <stdlib.h>
 #include <algorithm>
 
-#include "../pugixml/pugixml.hpp"
+//#include "../pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 #include "TranElemLiterals.h"
 #include "CLExec.h"
 
@@ -91,7 +85,7 @@ putOuts (vector<string> outputs, vector<string> nestedOutputs)
 	  newOutput += outputs[i];
 	  newOutput += nestedOutputs[j];
 //	  newOutput.push_back (spaces[tokenIndex]);
-
+//	  cout << "output : " << newOutput << endl;
 	  newOutputs.push_back (newOutput);
 	}
     }
@@ -214,6 +208,7 @@ RuleExecution::getOuts (vector<string>* finalOuts, vector<vector<Node> >* finalC
 			      ruleOutputs[combinations[k][l].ruleId][combinations[k][l].tokenId]
 				  + spaces[combinations[k][l].tokenId
 				      + combinations[k][l].patNum - 1];
+//			  cout << "ambigout : " << ambigOut << endl;
 //			  cout << i << " : " << j << " , " << ambigOut << endl;
 			}
 		      ambigOuts.push_back (ambigOut);
@@ -1002,13 +997,13 @@ pushDistinct (map<unsigned, vector<pair<unsigned, unsigned> > >* tokenRules,
 void
 printNodeAttrs (xml_node node)
 {
-  cout << node.name () << endl;
-  for (xml_node::attribute_iterator it = node.attributes_begin ();
-      it != node.attributes_end (); it++)
-    {
-      cout << it->name () << "=" << it->value () << "; ";
-    }
-  cout << endl << endl;
+//  cout << node.name () << endl;
+//  for (xml_node::attribute_iterator it = node.attributes_begin ();
+//      it != node.attributes_end (); it++)
+//    {
+//      cout << it->name () << "=" << it->value () << "; ";
+//    }
+//  cout << endl << endl;
 }
 
 void
@@ -1517,7 +1512,7 @@ RuleExecution::equal (xml_node equal, vector<vector<string> >* slAnalysisTokens,
 //    if (secondStr[i] != '<' && secondStr[i] != '>')
 //      temp += secondStr[i];
 //  secondStr = temp;
-  cout << "firstStr=" << firstStr << " , secondStr=" << secondStr << endl;
+//  cout << "firstStr=" << firstStr << " , secondStr=" << secondStr << endl;
 
   xml_attribute caseless = equal.attribute (CASE_LESS);
   if (string (caseless.value ()) == "yes")
@@ -1561,7 +1556,7 @@ RuleExecution::choose (xml_node chooseNode, vector<vector<string> >* slAnalysisT
 	  condition = true;
 	}
 
-      cout << "condition=" << condition << endl;
+//      cout << "condition=" << condition << endl;
       if (condition)
 	{
 	  for (xml_node inst = child.first_child (); inst; inst = inst.next_sibling ())
@@ -1920,7 +1915,7 @@ RuleExecution::var (xml_node var, map<string, string>* vars)
 
   string varName = var.attribute (N).value ();
   string varValue = (*vars)[varName];
-  cout << "varname=" << varName << " , value=" << (*vars)[varName] << endl;
+//  cout << "varname=" << varName << " , value=" << (*vars)[varName] << endl;
   return varValue;
 }
 
@@ -1987,9 +1982,9 @@ RuleExecution::let (xml_node let, vector<vector<string> >* slAnalysisTokens,
 	resultStr += secondResult[i];
 
       string varName = firstChild.attribute (N).value ();
-      cout << "varname=" << varName << " , value=" << resultStr << endl;
+//      cout << "varname=" << varName << " , value=" << resultStr << endl;
       (*vars)[varName] = resultStr;
-      cout << "varname=" << varName << " , value=" << (*vars)[varName] << endl;
+//      cout << "varname=" << varName << " , value=" << (*vars)[varName] << endl;
     }
   else if (firstName == CLIP)
     {
@@ -2066,9 +2061,9 @@ RuleExecution::clip (xml_node clip, vector<vector<string> >* slAnalysisTokens,
   xml_attribute linkTo = clip.attribute (LINK_TO);
   if (string (linkTo.name ()) == LINK_TO)
     {
-      pos = linkTo.as_uint () - 1;
-      result = tags[pos];
-
+//      pos = linkTo.as_uint () - 1;
+//      result = tags[pos];
+      result.push_back ("<" + string (linkTo.value ()) + ">");
 //      for (unsigned i = 0; i < result.size (); i++)
 //	result[i] = "<" + result[i] + ">";
 
@@ -2084,10 +2079,10 @@ RuleExecution::clip (xml_node clip, vector<vector<string> >* slAnalysisTokens,
   if (side == TL)
     analysisToken = (*tlAnalysisTokens)[pos];
 
-  cout << "analysisToken = ";
-  for (unsigned i = 0; i < analysisToken.size (); i++)
-    cout << analysisToken[i] << " ";
-  cout << endl;
+//  cout << "analysisToken = ";
+//  for (unsigned i = 0; i < analysisToken.size (); i++)
+//    cout << analysisToken[i] << " ";
+//  cout << endl;
 
   if (part == WHOLE)
     {
@@ -2110,8 +2105,8 @@ RuleExecution::clip (xml_node clip, vector<vector<string> >* slAnalysisTokens,
 //	}
 //      lem = newLem;
       size_t spaceInd = lem.find ('#');
-//       if (spaceInd == string::npos)
-// 	spaceInd = lem.find (' ');
+//      if (spaceInd == string::npos)
+//	spaceInd = lem.find (' ');
 
       if (spaceInd == string::npos)
 	{
@@ -2476,8 +2471,8 @@ RuleExecution::modifyCase (xml_node modifyCase, vector<vector<string> >* slAnaly
 //	  lem = newLem;
 
 	  size_t spaceInd = lem.find ('#');
-// 	  if (spaceInd == string::npos)
-// 	    spaceInd = lem.find (' ');
+//	  if (spaceInd == string::npos)
+//	    spaceInd = lem.find (' ');
 	  if (spaceInd == string::npos)
 	    {
 	      if (Case == aa)

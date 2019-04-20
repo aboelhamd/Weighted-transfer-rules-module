@@ -26,18 +26,16 @@ using namespace elem;
 int
 main (int argc, char **argv)
 {
-  string sentenceFilePath = "sentences.txt", lextorFilePath = "lextor.txt",
-      weightOutFilePath = "weights.txt", localeId = "kk_KZ", transferFilePath =
-	  "transferFile.tx1", datasetsPath = "datasets";
+  string lextorFilePath = "lextor.txt", weightOutFilePath = "weights.txt", localeId =
+      "kk_KZ", transferFilePath = "transferFile.tx1", datasetsPath = "datasets";
 
-  if (argc == 7)
+  if (argc == 6)
     {
       localeId = argv[1];
       transferFilePath = argv[2];
-      sentenceFilePath = argv[3];
-      lextorFilePath = argv[4];
-      weightOutFilePath = argv[5];
-      datasetsPath = argv[6];
+      lextorFilePath = argv[3];
+      weightOutFilePath = argv[4];
+      datasetsPath = argv[5];
     }
   else
     {
@@ -50,10 +48,8 @@ main (int argc, char **argv)
 //      outputFilePath = "output.out";
 //      datasetsPath = "datasetstry2";
 
-//./yasmet-formatter $localeId sentences.txt lextor.txt transfer.txt weights.txt $outputFile $datasets;
       localeId = "kk_KZ";
       transferFilePath = "apertium-kaz-tur.kaz-tur.t1x";
-      sentenceFilePath = "sample-sentences.txt";
       lextorFilePath = "sample-lextor.txt";
       weightOutFilePath = "norm-weights.txt";
       datasetsPath = "datasetstry1234";
@@ -66,7 +62,6 @@ main (int argc, char **argv)
 	  << endl;
       cout << "transferFilePath : Apertium transfer file of the language pair used."
 	  << endl;
-      cout << "sentenceFilePath : Source language sentences file." << endl;
       cout << "lextorFilePath : Apertium lextor file for the source language sentences."
 	  << endl;
       cout
@@ -78,8 +73,7 @@ main (int argc, char **argv)
     }
 
   ifstream lextorFile (lextorFilePath.c_str ());
-  ifstream inSentenceFile (sentenceFilePath.c_str ());
-  if (lextorFile.is_open () && inSentenceFile.is_open ())
+  if (lextorFile.is_open ())
     {
       // load transfer file in an xml document object
       xml_document* transferDoc = new xml_document ();
@@ -94,44 +88,26 @@ main (int argc, char **argv)
       // xml node of the parent node (transfer) in the transfer file
       xml_node transfer = transferDoc->child ("transfer");
 
-      vector<string> *sourceSentences = new vector<string> (), *tokenizedSentences =
-	  new vector<string> ();
+      vector<string> *tokenizedSentences = new vector<string> ();
 
       string tokenizedSentence;
-      //unsigned i = 0;
       while (getline (lextorFile, tokenizedSentence))
 	{
-	  string sourceSentence;
-	  if (!getline (inSentenceFile, sourceSentence))
-	    sourceSentence = "No more sentences";
-
-	  sourceSentences->push_back (sourceSentence);
 	  tokenizedSentences->push_back (tokenizedSentence);
-	  //if (i == 100)
-	  //  break;
-	  //i++;
 	}
       lextorFile.close ();
-      inSentenceFile.close ();
 
       map<string, vector<vector<string> > > attrs = RuleParser::getAttrs (transfer);
       map<string, string> vars = RuleParser::getVars (transfer);
       map<string, vector<string> > lists = RuleParser::getLists (transfer);
 
-//      vector<vector<string> >* vslTokens = new vector<vector<string> > ();
-//      vector<unsigned> vouts;
-//      vector<vector<RuleExecution::AmbigInfo> >* vambigInfo = new vector<
-//	  vector<RuleExecution::AmbigInfo> > ();
-//      vector<vector<vector<RuleExecution::Node> > > vcompNodes;
-
       ifstream weightOutFile (weightOutFilePath.c_str ());
       if (weightOutFile.is_open ())
-	for (unsigned i = 0; i < sourceSentences->size (); i++)
+	for (unsigned i = 0; i < tokenizedSentences->size (); i++)
 	  {
 //	    cout << i << endl;
 
 	    string sourceSentence, tokenizedSentence;
-	    sourceSentence = (*sourceSentences)[i];
 	    tokenizedSentence = (*tokenizedSentences)[i];
 
 	    // spaces after each token
