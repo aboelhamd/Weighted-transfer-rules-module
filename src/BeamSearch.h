@@ -12,9 +12,11 @@
 
 using namespace std;
 
-class BeamSearch {
+class BeamSearch
+{
 public:
-	static void transfer(string transferFilePath, string modelsFileDest,
-			string k, FILE* lextorFileFile, FILE* outFile);
+  static void
+  transfer (string transferFilePath, string localeId, string modelsFileDest, string k,
+	    FILE* lextorFileFile, FILE* outFile);
 };
 #endif /* SRC_BEAMSEARCH_H_ */
