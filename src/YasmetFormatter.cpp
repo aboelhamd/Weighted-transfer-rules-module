@@ -57,7 +57,7 @@ main (int argc, char **argv)
 
       cout << "Error in parameters !" << endl;
       cout
-	  << "Parameters are : localeId transferFilePath sentenceFilePath lextorFilePath weightOutFilePath datasetsPath"
+	  << "Parameters are : localeId transferFilePath lextorFilePath weightOutFilePath datasetsPath"
 	  << endl;
       cout << "localeId : ICU locale ID for the source language. For Kazakh => kk-KZ"
 	  << endl;
