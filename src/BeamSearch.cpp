@@ -164,20 +164,19 @@ main (int argc, char **argv)
 	  CLExec::beamSearch (&beamTree, beam, slTokens, newAmbigInfo, classesWeights,
 			      localeId);
 
+	  // take the first sentence only
+	  beamTree.erase (beamTree.begin () + 1, beamTree.end ());
+
 	  RuleExecution::getOuts (&outs, &combNodes, beamTree, nodesPool, ruleOutputs,
 				  spaces);
 
 	  // write the outs
+	  for (unsigned j = 0; j < outs.size (); j++)
+	    interInFile << outs[j] << endl;
 
-	  if (interInFile.is_open ())
-	    {
-	      for (unsigned j = 0; j < outs.size (); j++)
-		interInFile << outs[j] << endl;
-	    }
-
-	  interInFile.close ();
-	  lextorFile.close ();
 	}
+      interInFile.close ();
+      lextorFile.close ();
     }
   else
     {

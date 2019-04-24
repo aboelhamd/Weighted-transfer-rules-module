@@ -2,7 +2,7 @@ from os import listdir
 from os.path import isfile, join
 import sys
 
-if (len(sys.argv) != 4) :
+if (len(sys.argv) != 3) :
 	print('Usage: python merge-models.py modelsdest newfile');
 	sys.exit(-1)
 
