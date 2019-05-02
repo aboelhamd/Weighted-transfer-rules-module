@@ -53,12 +53,13 @@ main (int argc, char **argv)
       localeId = "es_ES";
       transferFilePath =
 	  "/home/aboelhamd/apertium-eng-spa-ambiguous-rules/apertium-eng-spa.spa-eng.t1x";
-      lextorFilePath = "/home/aboelhamd/Downloads/es-en/splits/xaa-lextor.txt";
-      interInFilePath = "/home/aboelhamd/Downloads/es-en/splits/xaa-chunker.txt";
+      lextorFilePath =
+	  "/home/aboelhamd/eclipse-workspace/machinetranslation/test-lextor.txt";
+      interInFilePath =
+	  "/home/aboelhamd/eclipse-workspace/machinetranslation/test-chunker.txt";
 
       cout << "Error in parameters !" << endl;
-      cout
-	  << "Parameters are : localeId transferFilePath lextorFilePath interInFilePath"
+      cout << "Parameters are : localeId transferFilePath lextorFilePath interInFilePath"
 	  << endl;
       cout << "localeId : ICU locale ID for the source language. For Kazakh => kk-KZ"
 	  << endl;
@@ -69,11 +70,20 @@ main (int argc, char **argv)
       cout
 	  << "interInFilePath : Output file name of this program which is the input for apertium interchunk."
 	  << endl;
-      return -1;
+//      return -1;
     }
 
   ifstream lextorFile (lextorFilePath.c_str ());
   ofstream interInFile (interInFilePath.c_str ());
+  ifstream refFile (
+      string ("/home/aboelhamd/eclipse-workspace/machinetranslation/tgt-test.txt").c_str ());
+  ofstream refInFile (
+      string ("/home/aboelhamd/eclipse-workspace/machinetranslation/tgt-test-mul.txt").c_str ());
+  ifstream errFile (
+      string (
+	  "/home/aboelhamd/Downloads/apertium-eval-translator-master/ambig_results.txt").c_str ());
+  ofstream bestInFile (
+      string ("/home/aboelhamd/eclipse-workspace/machinetranslation/best-chunker.txt").c_str ());
   if (lextorFile.is_open () && interInFile.is_open ())
     {
       // load transfer file in an xml document object
@@ -93,11 +103,11 @@ main (int argc, char **argv)
       map<string, string> vars = RuleParser::getVars (transfer);
       map<string, vector<string> > lists = RuleParser::getLists (transfer);
 
-//      unsigned i = 0;
-      string tokenizedSentence;
-      while (getline (lextorFile, tokenizedSentence))
+      unsigned i = 0;
+      string tokenizedSentence, refSent;
+      while (getline (lextorFile, tokenizedSentence) && getline (refFile, refSent))
 	{
-//	  cout << i++ << endl;
+	  cout << i++ << endl;
 
 	  // spaces after each token
 	  vector<string> spaces;
@@ -218,9 +228,40 @@ main (int argc, char **argv)
 //	      cout << endl;
 //	    }
 
+//	  set<string> diffOuts (outs.begin (), outs.end ());
+//
+//	  // write the outs
+//	  for (set<string>::iterator it = diffOuts.begin (); it != diffOuts.end (); it++)
+//	    {
+//	      interInFile << *it << endl;
+//	      refInFile << refSent << endl;
+//	    }
+
+	  float min = 100000;
+	  int minInd = -1;
+	  string serr;
+	  float err;
+
 	  // write the outs
 	  for (unsigned j = 0; j < outs.size (); j++)
-	    interInFile << outs[j] << endl;
+	    {
+	      getline (errFile, serr);
+	      err = strtof (serr.c_str (), NULL);
+
+	      if (err < min)
+		{
+		  min = err;
+		  minInd = j;
+		}
+
+	      interInFile << outs[j] << endl;
+	      refInFile << refSent << endl;
+	    }
+//	  cout << minInd << endl;
+	  bestInFile << outs[minInd] << endl;
+
+	  interInFile << endl;
+	  refInFile << endl;
 
 	  // delete AmbigInfo pointers
 	  for (unsigned j = 0; j < ambigInfo.size (); j++)
@@ -248,6 +289,9 @@ main (int argc, char **argv)
 
       lextorFile.close ();
       interInFile.close ();
+      refFile.close ();
+      refInFile.close ();
+      bestInFile.close ();
       cout << "RulesApplier finished!";
     }
   else
