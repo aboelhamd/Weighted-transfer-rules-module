@@ -286,6 +286,10 @@ public:
 	      map<string, vector<vector<string> > > attrs, map<string, string>* vars,
 	      vector<string> spaces, unsigned firPat, string localeId,
 	      map<unsigned, unsigned> paramToPattern);
+
+  static unsigned
+  getAmbigCount (map<unsigned, vector<pair<unsigned, unsigned> > > tokenRules,
+		 map<unsigned, vector<RuleExecution::Node*> > nodesPool);
 };
 
 #endif /* SRC_RULEEXECUTION_H_ */

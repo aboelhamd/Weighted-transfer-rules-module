@@ -506,6 +506,36 @@ getMaxPat (int curMaxPat, unsigned curToken,
   getMaxPat (max (curMaxPat - 1, maxPat - curMaxPat), curToken + 1, tokenRules, count);
 }
 
+unsigned
+RuleExecution::getAmbigCount (
+    map<unsigned, vector<pair<unsigned, unsigned> > > tokenRules,
+    map<unsigned, vector<RuleExecution::Node*> > nodesPool)
+{
+  unsigned combCount = 0;
+  for (unsigned tokId = 0; tokId < tokenRules.size ();)
+    {
+      unsigned maxPat = 0;
+      vector<pair<unsigned, unsigned> > rules = tokenRules[tokId];
+      getMaxPat (rules[0].second, tokId, tokenRules, &maxPat);
+
+      // if there is ambiguity
+      if (nodesPool[tokId].size () > 1)
+	{
+	  AmbigInfo* ambig = new AmbigInfo (tokId, maxPat);
+
+	  Node* dummy = ambiguousGraph (tokenRules, nodesPool, tokId, maxPat);
+	  getCombinations (dummy, vector<Node*> (), &ambig->combinations);
+
+	  // update combinations count
+	  combCount += ambig->combinations.size ();
+
+	  delete ambig;
+	}
+      tokId += maxPat;
+    }
+  return combCount;
+}
+
 void
 RuleExecution::getAmbigInfo (map<unsigned, vector<pair<unsigned, unsigned> > > tokenRules,
 			     map<unsigned, vector<RuleExecution::Node*> > nodesPool,
@@ -527,10 +557,15 @@ RuleExecution::getAmbigInfo (map<unsigned, vector<pair<unsigned, unsigned> > > t
 	  Node* dummy = ambiguousGraph (tokenRules, nodesPool, tokId, maxPat);
 	  getCombinations (dummy, vector<Node*> (), &ambig->combinations);
 
+	  // update combinations count
+	  *combNum += ambig->combinations.size ();
+
 	  if (!ambig->combinations.empty ())
 	    ambigInfo->push_back (ambig);
 
-	  *combNum += ambig->combinations.size ();
+	  // delete the pointer if not pushed to the list
+	  else
+	    delete ambig;
 	}
       tokId += maxPat;
     }
