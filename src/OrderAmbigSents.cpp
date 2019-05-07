@@ -57,16 +57,14 @@ main (int argc, char **argv)
       localeId = "es_ES";
       transferFilePath =
 	  "/home/aboelhamd/apertium-eng-spa-ambiguous-rules/apertium-eng-spa.spa-eng.t1x";
-      sourceFilePath =
-	  "/home/aboelhamd/eclipse-workspace/machinetranslation/xbe-sentences.txt";
+      sourceFilePath = "/home/aboelhamd/eclipse-workspace/machinetranslation/source.txt";
       srcLexFilePath =
-	  "/home/aboelhamd/eclipse-workspace/machinetranslation/xbe-lextor.txt";
-      targetFilePath =
-	  "/home/aboelhamd/eclipse-workspace/machinetranslation/xbe-transfer.txt";
+	  "/home/aboelhamd/eclipse-workspace/machinetranslation/source-lextor.txt";
+      targetFilePath = "/home/aboelhamd/eclipse-workspace/machinetranslation/target.txt";
       orderedSrcFilePath =
-	  "/home/aboelhamd/eclipse-workspace/machinetranslation/ordered-xbe-source.txt";
+	  "/home/aboelhamd/eclipse-workspace/machinetranslation/ordered-source.txt";
       orderedTrgFilePath =
-	  "/home/aboelhamd/eclipse-workspace/machinetranslation/ordered-xbe-target.txt";
+	  "/home/aboelhamd/eclipse-workspace/machinetranslation/ordered-target.txt";
 
       cout << "Error in parameters !" << endl;
       cout << "Parameters are : localeId transferFilePath sourceFilePath"
@@ -86,7 +84,7 @@ main (int argc, char **argv)
       cout
 	  << "orderedTrgFilePath : New file for the ordered target language sentences by most ambiguous."
 	  << endl;
-      return -1;
+//      return -1;
     }
 
   ifstream lextorFile (srcLexFilePath.c_str ());
@@ -117,14 +115,14 @@ main (int argc, char **argv)
       vector<string> orderedSources, orderedTargets;
       vector<unsigned> ambigCounts;
 
-      unsigned i = 0;
+//      unsigned i = 0;
       string tokenizedSentence, sourceSentence, targetSentence;
       while (getline (lextorFile, tokenizedSentence)
 	  && getline (sourceFile, sourceSentence) && getline (targetFile, targetSentence))
 	{
-	  cout << i++ << endl;
+//	  cout << i++ << endl;
 
-	  // spaces after each token
+// spaces after each token
 	  vector<string> spaces;
 
 	  // tokens in the sentence order
@@ -199,8 +197,8 @@ main (int argc, char **argv)
       // write the ordered sentences
       for (unsigned j = 0; j < orderedSources.size (); j++)
 	{
-	  orderedSrcFile << ambigCounts[j] << endl << orderedSources[j] << endl << endl;
-	  orderedTrgFile << ambigCounts[j] << endl << orderedTargets[j] << endl << endl;
+	  orderedSrcFile << orderedSources[j] << endl;
+	  orderedTrgFile << orderedTargets[j] << endl;
 	}
 
       lextorFile.close ();
