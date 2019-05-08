@@ -1,7 +1,7 @@
 require 'pragmatic_segmenter'
 
 if (ARGV.length < 3)
-  puts "Usage : ruby2.3 sentenceTokenizer.rb 639-1ISOlangCode textFilePath sentencesFilePath"
+  puts "\nUsage : ruby2.3 sentenceTokenizer.rb 639-1ISOlangCode textFilePath sentencesFilePath"
   exit
 end
 

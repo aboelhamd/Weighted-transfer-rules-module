@@ -115,12 +115,12 @@ main (int argc, char **argv)
       vector<string> orderedSources, orderedTargets;
       vector<unsigned> ambigCounts;
 
-//      unsigned i = 0;
+      unsigned i = 0;
       string tokenizedSentence, sourceSentence, targetSentence;
       while (getline (lextorFile, tokenizedSentence)
 	  && getline (sourceFile, sourceSentence) && getline (targetFile, targetSentence))
 	{
-//	  cout << i++ << endl;
+	  cout << i++ << endl;
 
 // spaces after each token
 	  vector<string> spaces;
@@ -195,8 +195,9 @@ main (int argc, char **argv)
 	}
 
       // write the ordered sentences
-      for (unsigned j = 0; j < orderedSources.size (); j++)
+      for (unsigned j = 0; j < 10000; j++)
 	{
+	  cout << j << endl;
 	  orderedSrcFile << orderedSources[j] << endl;
 	  orderedTrgFile << orderedTargets[j] << endl;
 	}

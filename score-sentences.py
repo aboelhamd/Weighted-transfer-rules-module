@@ -2,7 +2,7 @@ import sys
 import kenlm
 
 if (len(sys.argv) < 4) :
-	print('Usage: python score-sentences.py arpa_or_binary_LM_file target_lang_file weights_file');
+	print('\nUsage: python score-sentences.py arpa_or_binary_LM_file target_lang_file weights_file');
 	sys.exit(-1)
 
 targetfile = open(sys.argv[2], 'r')
