@@ -15,7 +15,6 @@
 
 #include <omp.h>
 
-#include "ambiguous_chunker.h"
 #include "ambiguous_transfer.h"
 #include "case_handler.h"
 #include "transfer_literals.h"

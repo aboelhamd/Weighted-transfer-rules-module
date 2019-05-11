@@ -8,6 +8,7 @@
 #ifndef SRC_AMBIGUOUS_TRANSFER_H_
 #define SRC_AMBIGUOUS_TRANSFER_H_
 
+#include "ambiguous_chunker.h"
 #include <iostream>
 
 using namespace std;
