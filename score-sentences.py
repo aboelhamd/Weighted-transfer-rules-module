@@ -1,12 +1,12 @@
 import sys
 import kenlm
 
-if (len(sys.argv) < 4) :
+if (len(sys.argv) != 4) :
 	print('\nUsage: python score-sentences.py arpa_or_binary_LM_file target_lang_file weights_file');
-	sys.exit(-1)
+	sys.exit()
 
 targetfile = open(sys.argv[2], 'r')
-weightfile = open(sys.argv[3], 'w')
+weightfile = open(sys.argv[3], 'w+')
 
 # Load the language model
 model = kenlm.LanguageModel(sys.argv[1])

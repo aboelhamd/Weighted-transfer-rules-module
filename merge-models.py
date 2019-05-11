@@ -3,15 +3,12 @@ from os.path import isfile, join
 import sys
 
 if (len(sys.argv) != 3) :
-	print('Usage: python merge-models.py modelsdest newfile');
-	sys.exit(-1)
+	print('\nUsage: python merge-models.py modelsdest newfile');
+	sys.exit()
 
-newfile = open(sys.argv[2], 'w')
-#localeid = sys.argv[2]
 modelsdest = sys.argv[1]
+newfile = open(sys.argv[2], 'w+')
 
-# localeid
-#newfile.write("%s\n" % localeid)
 
 models = [f for f in listdir(modelsdest) if isfile(join(modelsdest, f))]
 
