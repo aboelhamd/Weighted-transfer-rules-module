@@ -84,7 +84,7 @@ main (int argc, char **argv)
       cout
 	  << "orderedTrgFilePath : New file for the ordered target language sentences by most ambiguous."
 	  << endl;
-//      return -1;
+      return -1;
     }
 
   ifstream lextorFile (srcLexFilePath.c_str ());
