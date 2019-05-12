@@ -70,7 +70,7 @@ main (int argc, char **argv)
       cout
 	  << "interInFilePath : Output file name of this program which is the input for apertium interchunk."
 	  << endl;
-//      return -1;
+      return -1;
     }
 
   ifstream lextorFile (lextorFilePath.c_str ());

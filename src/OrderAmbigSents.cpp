@@ -122,7 +122,7 @@ main (int argc, char **argv)
 	{
 	  cout << i++ << endl;
 
-// spaces after each token
+	  // spaces after each token
 	  vector<string> spaces;
 
 	  // tokens in the sentence order
