@@ -75,15 +75,6 @@ main (int argc, char **argv)
 
   ifstream lextorFile (lextorFilePath.c_str ());
   ofstream interInFile (interInFilePath.c_str ());
-  ifstream refFile (
-      string ("/home/aboelhamd/eclipse-workspace/machinetranslation/tgt-test.txt").c_str ());
-  ofstream refInFile (
-      string ("/home/aboelhamd/eclipse-workspace/machinetranslation/tgt-test-mul.txt").c_str ());
-  ifstream errFile (
-      string (
-	  "/home/aboelhamd/Downloads/apertium-eval-translator-master/ambig_results.txt").c_str ());
-  ofstream bestInFile (
-      string ("/home/aboelhamd/eclipse-workspace/machinetranslation/best-chunker.txt").c_str ());
   if (lextorFile.is_open () && interInFile.is_open ())
     {
       // load transfer file in an xml document object
@@ -103,11 +94,11 @@ main (int argc, char **argv)
       map<string, string> vars = RuleParser::getVars (transfer);
       map<string, vector<string> > lists = RuleParser::getLists (transfer);
 
-      unsigned i = 0;
-      string tokenizedSentence, refSent;
-      while (getline (lextorFile, tokenizedSentence) && getline (refFile, refSent))
+//      unsigned i = 0;
+      string tokenizedSentence;
+      while (getline (lextorFile, tokenizedSentence))
 	{
-	  cout << i++ << endl;
+//	  cout << i++ << endl;
 
 	  // spaces after each token
 	  vector<string> spaces;
@@ -159,109 +150,12 @@ main (int argc, char **argv)
 	  RuleExecution::getOuts (&outs, &combNodes, ambigInfo, nodesPool, ruleOutputs,
 				  spaces);
 
-//	  for (unsigned j = 0; j < tlTokens.size (); j++)
-//	    {
-//	      cout << tlTokens[j] << endl;
-//	      vector<pair<unsigned, unsigned> > rulees = tokenRules[j];
-//	      for (unsigned k = 0; k < rulees.size (); k++)
-//		{
-//		  cout << rulees[k].first << " , " << rulees[k].second << endl;
-//		}
-//	      cout << endl;
-//	    }
-//
-//	  for (unsigned j = 0; j < ambigInfo.size (); j++)
-//	    {
-//	      cout << "firTokId = " << ambigInfo[j]->firTokId << "; maxPat = "
-//		  << ambigInfo[j]->maxPat << endl;
-//	      vector<vector<RuleExecution::Node*> > combinations =
-//		  ambigInfo[j]->combinations;
-//	      cout << endl;
-//	      for (unsigned k = 0; k < combinations.size (); k++)
-//		{
-//		  vector<RuleExecution::Node*> nodes = combinations[k];
-//		  for (unsigned l = 1; l < nodes.size (); l++)
-//		    {
-//		      cout << "tok=" << nodes[l]->tokenId << "; rul=" << nodes[l]->ruleId
-//			  << "; pat=" << nodes[l]->patNum << " - ";
-//		    }
-//		  cout << endl;
-//		}
-//	      cout << endl;
-//	    }
-//
-//	  for (map<unsigned, map<unsigned, string> >::iterator it = ruleOutputs.begin ();
-//	      it != ruleOutputs.end (); it++)
-//	    {
-//	      cout << "ruleId=" << it->first << endl;
-//	      map<unsigned, string> outs = it->second;
-//
-//	      for (map<unsigned, string>::iterator it2 = outs.begin ();
-//		  it2 != outs.end (); it2++)
-//		{
-//		  cout << "tokId=" << it2->first << " , out = " << it2->second << endl;
-//		}
-//	      cout << endl;
-//	    }
-//	  cout << endl;
-//
-//	  for (unsigned j = 0; j < tlTokens.size (); j++)
-//	    {
-//	      vector<RuleExecution::Node*> nodes = nodesPool[j];
-//	      cout << "tokId = " << j << " : " << tlTokens[j] << endl;
-//	      for (unsigned k = 0; k < nodes.size (); k++)
-//		{
-//		  cout << "ruleId = " << nodes[k]->ruleId << "; patNum = "
-//		      << nodes[k]->patNum << endl;
-//		}
-//	      cout << endl;
-//	    }
-//
-//	  for (unsigned j = 0; j < combNodes.size (); j++)
-//	    {
-//	      vector<RuleExecution::Node*> nodes = combNodes[j];
-//	      for (unsigned k = 0; k < nodes.size (); k++)
-//		{
-//		  cout << "tok=" << nodes[k]->tokenId << "; rul=" << nodes[k]->ruleId
-//		      << "; pat=" << nodes[k]->patNum << " - ";
-//		}
-//	      cout << endl;
-//	    }
-
-//	  set<string> diffOuts (outs.begin (), outs.end ());
-//
-//	  // write the outs
-//	  for (set<string>::iterator it = diffOuts.begin (); it != diffOuts.end (); it++)
-//	    {
-//	      interInFile << *it << endl;
-//	      refInFile << refSent << endl;
-//	    }
-
-	  float min = 100000;
-	  int minInd = -1;
-	  string serr;
-	  float err;
-
 	  // write the outs
 	  for (unsigned j = 0; j < outs.size (); j++)
 	    {
-	      getline (errFile, serr);
-	      err = strtof (serr.c_str (), NULL);
-
-	      if (err < min)
-		{
-		  min = err;
-		  minInd = j;
-		}
-
 	      interInFile << outs[j] << endl;
-	      refInFile << refSent << endl;
 	    }
-//	  cout << minInd << endl;
-	  bestInFile << outs[minInd] << endl;
-
 	  interInFile << endl;
-	  refInFile << endl;
 
 	  // delete AmbigInfo pointers
 	  for (unsigned j = 0; j < ambigInfo.size (); j++)
@@ -289,10 +183,7 @@ main (int argc, char **argv)
 
       lextorFile.close ();
       interInFile.close ();
-      refFile.close ();
-      refInFile.close ();
-      bestInFile.close ();
-      cout << "RulesApplier finished!";
+//      cout << "RulesApplier finished!";
     }
   else
     {

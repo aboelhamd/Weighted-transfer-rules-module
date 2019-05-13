@@ -120,8 +120,8 @@ main (int argc, char **argv)
       map<string, string> vars = RuleParser::getVars (transfer);
       map<string, vector<string> > lists = RuleParser::getLists (transfer);
 
-      string tokenizedSentence;
       // unsigned i = 0;
+      string tokenizedSentence;
       while (getline (lextorFile, tokenizedSentence))
 	{
 	  // cout << i << endl;
@@ -186,6 +186,8 @@ main (int argc, char **argv)
 	      float weight = strtof (line.c_str (), NULL);
 	      normWeights.push_back (weight);
 	    }
+	  // beware of the newline
+	  getline (weightFile, line);
 
 	  // read transfer
 	  vector<string> normTransfers;
@@ -194,6 +196,8 @@ main (int argc, char **argv)
 	      getline (transferOutFile, line);
 	      normTransfers.push_back (line);
 	    }
+	  // beware of the newline
+	  getline (transferOutFile, line);
 
 	  // remove redundant outputs
 	  vector<string> outs;

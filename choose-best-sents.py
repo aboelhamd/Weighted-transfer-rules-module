@@ -16,10 +16,10 @@ minwer, minper, minwerper, minwerI, minperI, minwerperI = 10000.,10000.,10000.,0
 
 with open(sys.argv[1]) as scoresFile, open(sys.argv[2]) as combFile: 
   for scores, sent in zip(scoresFile, combFile):
-    print(scores.strip())
+    #print(scores.strip())
     if (scores.strip()) :
       sents.append(sent)
-      scoresArr = list(map(int, scores.split()))
+      scoresArr = list(map(float, scores.split()))
       wer = scoresArr[0]
       per = scoresArr[1]
       werper = wer+per
@@ -41,9 +41,9 @@ with open(sys.argv[1]) as scoresFile, open(sys.argv[2]) as combFile:
       werspers.append(werper)
     
     else :
-      minwerFile.write(sents[minwerI]+"\n")
-      minperFile.write(sents[minperI]+"\n")
-      minwerperFile.write(sents[minwerperI]+"\n")
+      minwerFile.write(sents[minwerI])
+      minperFile.write(sents[minperI])
+      minwerperFile.write(sents[minwerperI])
       
       minwer, minper, minwerper, minwerI, minperI, minwerperI = 10000.,10000.,10000.,0,0,0
       

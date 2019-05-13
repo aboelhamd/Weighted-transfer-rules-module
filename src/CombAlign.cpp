@@ -79,13 +79,13 @@ main (int argc, char **argv)
       cout << "referenceFilePath : Reference parallel target translation file path."
 	  << endl;
       cout << "newRefFilePath : New aligned reference file path." << endl;
-//      return -1;
+      return -1;
     }
 
   ifstream lextorFile (lextorFilePath.c_str ());
   ofstream chunkerFile (chunkerFilePath.c_str ());
-  ifstream referenceFile (referenceFilePath);
-  ofstream newRefFile (newRefFilePath);
+  ifstream referenceFile (referenceFilePath.c_str ());
+  ofstream newRefFile (newRefFilePath.c_str ());
   if (lextorFile.is_open () && chunkerFile.is_open () && referenceFile.is_open ()
       && newRefFile.is_open ())
     {
@@ -106,11 +106,11 @@ main (int argc, char **argv)
       map<string, string> vars = RuleParser::getVars (transfer);
       map<string, vector<string> > lists = RuleParser::getLists (transfer);
 
-      unsigned i = 0;
+//      unsigned i = 0;
       string tokenizedSentence, refSent;
       while (getline (lextorFile, tokenizedSentence) && getline (referenceFile, refSent))
 	{
-	  cout << i++ << endl;
+//	  cout << i++ << endl;
 
 	  // spaces after each token
 	  vector<string> spaces;
@@ -200,7 +200,7 @@ main (int argc, char **argv)
       chunkerFile.close ();
       referenceFile.close ();
       newRefFile.close ();
-      cout << "CombAlign finished!";
+//      cout << "CombAlign finished!";
     }
   else
     {
