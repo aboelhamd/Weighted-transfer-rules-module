@@ -30,10 +30,10 @@ int
 main (int argc, char **argv)
 {
   string sentenceFilePath, lextorFilePath, localeId, transferFilePath,
-      transferOutFilePath, weightFilePath, outputFilePath, bestModFilePath,
+      transferOutFilePath, weightFilePath, /*outputFilePath,*/ bestModFilePath,
       randModFilePath;
 
-  if (argc == 10)
+  if (argc == 9)
     {
       localeId = argv[1];
       transferFilePath = argv[2];
@@ -43,9 +43,9 @@ main (int argc, char **argv)
       transferOutFilePath = argv[5];
       weightFilePath = argv[6];
 
-      outputFilePath = argv[7];
-      bestModFilePath = argv[8];
-      randModFilePath = argv[9];
+//      outputFilePath = argv[7];
+      bestModFilePath = argv[7];
+      randModFilePath = argv[8];
     }
   else
     {
@@ -77,13 +77,13 @@ main (int argc, char **argv)
       transferOutFilePath = "spa-transfer.txt";
       weightFilePath = "spa-weight.txt";
 
-      outputFilePath = "outAnalysis.txt";
+//      outputFilePath = "outAnalysis.txt";
       bestModFilePath = "bestModFile.txt";
       randModFilePath = "randModFile.txt";
 
       cout << "Error in parameters !" << endl;
       cout
-	  << "Parameters are : localeId transferFilePath sentenceFilePath lextorFilePath transferOutFilePath weightOutFilePath outputFilePath bestModFilePath randModFilePath"
+	  << "Parameters are : localeId transferFilePath sentenceFilePath lextorFilePath transferOutFilePath weightOutFilePath bestModFilePath randModFilePath"
 	  << endl;
       cout << "localeId : ICU locale ID for the source language. For Kazakh => kk-KZ"
 	  << endl;
@@ -98,9 +98,9 @@ main (int argc, char **argv)
       cout
 	  << "weightOutFilePath : Language model weights file for the source language sentences."
 	  << endl;
-      cout
-	  << "outputFilePath : First output file name of this program which is the complete analysis for the source language sentences."
-	  << endl;
+//      cout
+//	  << "outputFilePath : First output file name of this program which is the complete analysis for the source language sentences."
+//	  << endl;
       cout
 	  << "bestModFilePath : Second output file name which is the best (language model) translations for the source language sentences."
 	  << endl;
@@ -150,8 +150,8 @@ main (int argc, char **argv)
       map<string, vector<string> > lists = RuleParser::getLists (transfer);
 
       // empty output files
-      ofstream outputFile (outputFilePath.c_str ());
-      outputFile.close ();
+//      ofstream outputFile (outputFilePath.c_str ());
+//      outputFile.close ();
       ofstream bestModFile (bestModFilePath.c_str ());
       bestModFile.close ();
       ofstream randModFile (randModFilePath.c_str ());
@@ -260,46 +260,46 @@ main (int argc, char **argv)
 	    RuleExecution::normaliseWeights (&normWeights);
 
 	    // write normal outputs
-	    ofstream outputFile (outputFilePath.c_str (), ofstream::app);
-	    if (outputFile.is_open ())
-	      {
-		outputFile << "Analysis of sentence : " << endl;
-		outputFile << sourceSentence << endl << endl << endl;
-
-		outputFile << endl;
-		outputFile << "sentence id ||| coverage id ||| original sentence |||"
-		    << " lextor ||| rules ||| chunker ||| final sentence ||| score"
-		    << endl << endl;
-
-		for (unsigned j = 0; j < normWeights.size (); j++)
-		  {
-		    // sentence id
-		    outputFile << (i + 1) << " ||| ";
-		    // coverage id
-		    outputFile << (j + 1) << " ||| ";
-		    // original sentence
-		    outputFile << sourceSentence << " ||| ";
-		    // lextor
-		    outputFile << tokenizedSentence << " ||| ";
-		    // rules
-		    for (unsigned k = 0; k < normCombNodes[j].size (); k++)
-		      if (normCombNodes[j][k]->ruleId)
-			outputFile << normCombNodes[j][k]->ruleId << " ";
-		    outputFile << "||| ";
-		    // chuncker
-		    outputFile << normOuts[j] << " ||| ";
-		    // final sentence
-		    outputFile << normTransfers[j] << " ||| ";
-		    // score
-		    outputFile << normWeights[j] << endl << endl;
-		  }
-
-		outputFile
-		    << "---------------------------------------------------------------------------------------------------------"
-		    << endl << endl;
-
-		outputFile.close ();
-	      }
+//	    ofstream outputFile (outputFilePath.c_str (), ofstream::app);
+//	    if (outputFile.is_open ())
+//	      {
+//		outputFile << "Analysis of sentence : " << endl;
+//		outputFile << sourceSentence << endl << endl << endl;
+//
+//		outputFile << endl;
+//		outputFile << "sentence id ||| coverage id ||| original sentence |||"
+//		    << " lextor ||| rules ||| chunker ||| final sentence ||| score"
+//		    << endl << endl;
+//
+//		for (unsigned j = 0; j < normWeights.size (); j++)
+//		  {
+//		    // sentence id
+//		    outputFile << (i + 1) << " ||| ";
+//		    // coverage id
+//		    outputFile << (j + 1) << " ||| ";
+//		    // original sentence
+//		    outputFile << sourceSentence << " ||| ";
+//		    // lextor
+//		    outputFile << tokenizedSentence << " ||| ";
+//		    // rules
+//		    for (unsigned k = 0; k < normCombNodes[j].size (); k++)
+//		      if (normCombNodes[j][k]->ruleId)
+//			outputFile << normCombNodes[j][k]->ruleId << " ";
+//		    outputFile << "||| ";
+//		    // chuncker
+//		    outputFile << normOuts[j] << " ||| ";
+//		    // final sentence
+//		    outputFile << normTransfers[j] << " ||| ";
+//		    // score
+//		    outputFile << normWeights[j] << endl << endl;
+//		  }
+//
+//		outputFile
+//		    << "---------------------------------------------------------------------------------------------------------"
+//		    << endl << endl;
+//
+//		outputFile.close ();
+//	      }
 
 	    // Model weighting
 	    // best weight
@@ -340,24 +340,24 @@ main (int argc, char **argv)
 	    ofstream randModFile (randModFilePath.c_str (), ofstream::app);
 	    if (randModFile.is_open ())
 	      {
-		randModFile << (i + 1) << endl;
-		randModFile << "Source :  " << sourceSentence << endl << endl;
+//		randModFile << (i + 1) << endl;
+//		randModFile << "Source :  " << sourceSentence << endl << endl;
 
 		int random = rand () % normWeights.size ();
 
 		// final sentence
-		randModFile << "Target :  " << normTransfers[random] << endl;
+		randModFile /*<< "Target :  "*/ << normTransfers[random] << endl;
 		// score
-		randModFile << "Weight :  " << normWeights[random] << endl;
+//		randModFile << "Weight :  " << normWeights[random] << endl;
 		// rules
-		randModFile << "Rules :  ";
-		for (unsigned k = 0; k < normCombNodes[random].size (); k++)
-		  if (normCombNodes[random][k]->ruleId)
-		    randModFile << normCombNodes[random][k]->ruleId << " ";
-
-		randModFile << endl
-		    << "---------------------------------------------------------------------------------------------------------"
-		    << endl << endl << endl;
+//		randModFile << "Rules :  ";
+//		for (unsigned k = 0; k < normCombNodes[random].size (); k++)
+//		  if (normCombNodes[random][k]->ruleId)
+//		    randModFile << normCombNodes[random][k]->ruleId << " ";
+//
+//		randModFile << endl
+//		    << "---------------------------------------------------------------------------------------------------------"
+//		    << endl << endl << endl;
 	      }
 	    randModFile.close ();
 	  }

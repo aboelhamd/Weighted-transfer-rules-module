@@ -155,7 +155,7 @@ main (int argc, char **argv)
 	    {
 	      interInFile << outs[j] << endl;
 	    }
-	  interInFile << endl;
+//	  interInFile << endl;
 
 	  // delete AmbigInfo pointers
 	  for (unsigned j = 0; j < ambigInfo.size (); j++)
