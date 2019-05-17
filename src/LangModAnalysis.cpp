@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	if (optind - argc == 6) {
+	if (argc - optind == 6) {
 		localeId = argv[optind - argc - 6];
 		transferFilePath = argv[optind - argc - 5];
 		sentenceFilePath = argv[optind - argc - 4];
