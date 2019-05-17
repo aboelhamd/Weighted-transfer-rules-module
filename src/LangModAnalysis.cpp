@@ -53,13 +53,13 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	if (optind - argc == 7) {
-		localeId = argv[1];
-		transferFilePath = argv[2];
-		sentenceFilePath = argv[3];
-		lextorFilePath = argv[4];
-		targetFilePath = argv[5];
-		weightFilePath = argv[6];
+	if (optind - argc == 6) {
+		localeId = argv[optind - argc - 6];
+		transferFilePath = argv[optind - argc - 5];
+		sentenceFilePath = argv[optind - argc - 4];
+		lextorFilePath = argv[optind - argc - 3];
+		targetFilePath = argv[optind - argc - 2];
+		weightFilePath = argv[optind - argc - 1];
 	} else {
 //      localeId = "es_ES";
 //      transferFilePath = "transferFile.t1x";
