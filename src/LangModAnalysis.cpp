@@ -54,12 +54,15 @@ int main(int argc, char **argv) {
 	}
 
 	if (argc - optind == 6) {
-		localeId = argv[optind - argc - 6];
-		transferFilePath = argv[optind - argc - 5];
-		sentenceFilePath = argv[optind - argc - 4];
-		lextorFilePath = argv[optind - argc - 3];
-		targetFilePath = argv[optind - argc - 2];
-		weightFilePath = argv[optind - argc - 1];
+		localeId = argv[argc - 6];
+		transferFilePath = argv[argc - 5];
+		sentenceFilePath = argv[argc - 4];
+		lextorFilePath = argv[argc - 3];
+		targetFilePath = argv[argc - 2];
+		weightFilePath = argv[argc - 1];
+		cout << localeId << "  " << transferFilePath << "  " << sentenceFilePath
+				<< "  " << lextorFilePath << "  " << targetFilePath << "  "
+				<< weightFilePath << endl;
 	} else {
 //      localeId = "es_ES";
 //      transferFilePath = "transferFile.t1x";
@@ -82,12 +85,12 @@ int main(int argc, char **argv) {
 //      randModFilePath = "randModFile.txt";
 
 		localeId = "es_ES";
-		transferFilePath = "transferFile3.t1x";
-		sentenceFilePath = "spa-toknizer.txt";
-		lextorFilePath = "spa-lextor.txt";
+		transferFilePath = "test/apertium-kaz-tur.kaz-tur.t1x";
+		sentenceFilePath = "test/source.txt";
+		lextorFilePath = "test/lextor.txt";
 
-		targetFilePath = "spa-transfer.txt";
-		weightFilePath = "spa-weight.txt";
+		targetFilePath = "test/transfer.txt";
+		weightFilePath = "test/night-weights.txt";
 
 		analysisFilePath = "outAnalysis.txt";
 		bestModFilePath = "bestModFile.txt";
@@ -123,7 +126,7 @@ int main(int argc, char **argv) {
 		cout
 				<< "randModFilePath : Third output file name which is random translations from (language model) for the source language sentences."
 				<< endl;
-		return -1;
+//		return -1;
 	}
 
 	// seed for randomness
@@ -182,7 +185,7 @@ int main(int argc, char **argv) {
 
 		if (weightFile.is_open() && targetFile.is_open())
 			for (unsigned i = 0; i < sourceSentences.size(); i++) {
-//				cout << i << endl;
+				cout << i << endl;
 
 				string sourceSentence, tokenizedSentence;
 				sourceSentence = sourceSentences[i];
