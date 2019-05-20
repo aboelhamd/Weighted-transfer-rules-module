@@ -28,10 +28,14 @@ int main(int argc, char **argv) {
 	string localeId, transferFilePath, lextorFilePath, targetFilePath,
 			weightsFilePath, datasetsPath;
 
+	bool tagsFeats = false;
 	int opt;
-	while ((opt = getopt(argc, argv, ":t:")) != -1) {
+	while ((opt = getopt(argc, argv, ":r:t")) != -1) {
 		switch (opt) {
 		case 't':
+			tagsFeats = true;
+			break;
+		case 'r':
 			targetFilePath = optarg;
 			break;
 		case ':':
@@ -68,7 +72,8 @@ int main(int argc, char **argv) {
 
 		cout << "Error in parameters !" << endl;
 		cout << "Parameters are : localeId transferFilePath lextorFilePath"
-				<< " weightOutFilePath datasetsPath -t targetFilePath" << endl;
+				<< " weightOutFilePath datasetsPath [-r targetFilePath] [-t]"
+				<< endl;
 		cout
 				<< "localeId : ICU locale ID for the source language. For Kazakh => kk_KZ"
 				<< endl;
@@ -84,9 +89,10 @@ int main(int argc, char **argv) {
 		cout
 				<< "datasetsPath : Datasets destination to put in the generated yasmet files."
 				<< endl;
-		cout
-				<< "targetFilePath : Target file path, if you want to remove \"bad\" sentences."
+		cout << "-r : Remove \"bad\" sentences (with # or @)." << endl;
+		cout << "targetFilePath : Target file path for these sentences."
 				<< endl;
+		cout << "-t : Tags as features in yasmet." << endl;
 		return -1;
 	}
 
@@ -181,21 +187,17 @@ int main(int argc, char **argv) {
 			// remove bad sentences with (*,#,@)
 			string line;
 
-			if (!targetFilePath.empty()) {
-				bool isBad;
-				for (unsigned j = 0; j < outs.size(); j++) {
-					getline(targetFile, line);
-					if (line.find('*') != string::npos
-							|| line.find('#') != string::npos
-							|| line.find('@') != string::npos) {
-						isBad = true;
-						break;
-					}
+			bool isBad = false;
+			for (unsigned j = 0; j < outs.size(); j++) {
+				getline(targetFile, line);
+//				cout << line << "  " << line.find('#') << "  " << line.find('@')
+//						<< endl;
+				if (line.find('#') != string::npos
+						|| line.find('@') != string::npos) {
+					isBad = true;
+					break;
 				}
-				if (isBad)
-					continue;
 			}
-			goodSents++;
 
 			// read weights
 			vector<float> weights;
@@ -204,6 +206,11 @@ int main(int argc, char **argv) {
 				float weight = strtof(line.c_str(), NULL);
 				weights.push_back(weight);
 			}
+
+			if (!targetFilePath.empty() && isBad)
+				continue;
+
+			goodSents++;
 
 			RuleExecution::normaliseWeights(&weights, ambigInfo);
 
@@ -274,9 +281,11 @@ int main(int argc, char **argv) {
 									word.replace(c, 1, "_");
 
 							features += " " + word + "_" + num + ":" + label;
-							for (unsigned d = 0; d < slTags[z].size(); d++)
-								features += " " + slTags[z][d] + "_" + num + ":"
-										+ label;
+
+							if (tagsFeats)
+								for (unsigned d = 0; d < slTags[z].size(); d++)
+									features += " " + slTags[z][d] + "_" + num
+											+ ":" + label;
 						}
 						features += " #";
 					}
