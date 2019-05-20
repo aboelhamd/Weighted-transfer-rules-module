@@ -16,7 +16,7 @@ pairPar=$4;
 # 5) model weight program path.
 modelWeight=$5;
 
-# 6) ICU locale ID for the source language. For Kazakh => kk-KZ
+# 6) ICU locale ID for the source language. For Kazakh => kk_KZ
 localeId=$6;
 
 # 7) Analysis output file name.

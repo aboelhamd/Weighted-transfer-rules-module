@@ -70,7 +70,7 @@ main (int argc, char **argv)
       cout << "Parameters are : localeId transferFilePath sourceFilePath"
 	  << " lextorFilePath targetFilePath orderedSrcFilePath orderedTrgFilePath"
 	  << endl;
-      cout << "localeId : ICU locale ID for the source language. For Kazakh => kk-KZ"
+      cout << "localeId : ICU locale ID for the source language. For Kazakh => kk_KZ"
 	  << endl;
       cout << "transferFilePath : Apertium transfer file of the language pair used."
 	  << endl;

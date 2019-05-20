@@ -61,7 +61,7 @@ main (int argc, char **argv)
       cout << "Error in parameters !" << endl;
       cout << "Parameters are : localeId transferFilePath lextorFilePath interInFilePath"
 	  << endl;
-      cout << "localeId : ICU locale ID for the source language. For Kazakh => kk-KZ"
+      cout << "localeId : ICU locale ID for the source language. For Kazakh => kk_KZ"
 	  << endl;
       cout << "transferFilePath : Apertium transfer file of the language pair used."
 	  << endl;
