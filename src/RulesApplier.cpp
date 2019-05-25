@@ -34,6 +34,9 @@ int main(int argc, char **argv) {
 		case 'u':
 			newLextorFilePath = optarg;
 			break;
+		case ':':
+			printf("option %c needs a value\n", optopt);
+			return -1;
 		case '?':
 			printf("unknown option: %c\n", optopt);
 			return -1;

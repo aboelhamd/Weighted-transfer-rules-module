@@ -12,7 +12,7 @@ weightfile = open(sys.argv[3], 'w+')
 model = kenlm.LanguageModel(sys.argv[1])
 
 for sentence in targetfile:
-	weightfile.write('%f\n' % (1.0/model.score(sentence)))
+	weightfile.write('%f\n' % -(1.0/model.score(sentence)))
 
 targetfile.close()
 weightfile.close()
