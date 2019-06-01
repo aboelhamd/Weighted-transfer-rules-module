@@ -28,11 +28,15 @@ int main(int argc, char **argv) {
 	string localeId, transferFilePath, lextorFilePath, chunkerFilePath,
 			newLextorFilePath;
 
+	bool newline = false;
 	int opt;
-	while ((opt = getopt(argc, argv, ":u:")) != -1) {
+	while ((opt = getopt(argc, argv, ":u:n")) != -1) {
 		switch (opt) {
 		case 'u':
 			newLextorFilePath = optarg;
+			break;
+		case 'n':
+			newline = true;
 			break;
 		case ':':
 			printf("option %c needs a value\n", optopt);
@@ -71,7 +75,7 @@ int main(int argc, char **argv) {
 
 		cout << "Error in parameters !" << endl;
 		cout << "Parameters are : localeId transferFilePath"
-				<< " lextorFilePath chunkerFilePath [-u newlextorFilePath]"
+				<< " lextorFilePath chunkerFilePath [-u newlextorFilePath] [-n]"
 				<< endl;
 		cout
 				<< "localeId : ICU locale ID for the source language. For Kazakh => kk_KZ"
@@ -88,6 +92,9 @@ int main(int argc, char **argv) {
 		cout << "-u : remove sentences with unknown words." << endl;
 		cout
 				<< "newlextorFilePath : write the new sentences lextor in this lextor file."
+				<< endl;
+		cout
+				<< "-n : put newline after each sentence ambiguous chunker (to use it removing bad sentences)."
 				<< endl;
 		return -1;
 	}
@@ -186,7 +193,8 @@ int main(int argc, char **argv) {
 			for (unsigned j = 0; j < outs.size(); j++) {
 				chunkerFile << outs[j] << endl;
 			}
-//	  interInFile << endl;
+			if (newline)
+				chunkerFile << endl;
 
 			// delete AmbigInfo pointers
 			for (unsigned j = 0; j < ambigInfo.size(); j++) {

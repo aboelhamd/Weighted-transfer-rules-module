@@ -8,10 +8,7 @@ minwerFile = open(sys.argv[3], 'w+')
 minperFile = open(sys.argv[4], 'w+')
 minwerperFile = open(sys.argv[5], 'w+')
 
-sents = []
-wers = []
-pers = []
-werspers = []
+sents, wers, pers, werspers = [], [], [], []
 minwer, minper, minwerper, minwerI, minperI, minwerperI = 10000.,10000.,10000.,0,0,0
 
 with open(sys.argv[1]) as scoresFile, open(sys.argv[2]) as combFile: 
@@ -46,6 +43,7 @@ with open(sys.argv[1]) as scoresFile, open(sys.argv[2]) as combFile:
       minwerperFile.write(sents[minwerperI])
       
       minwer, minper, minwerper, minwerI, minperI, minwerperI = 10000.,10000.,10000.,0,0,0
+      sents, wers, pers, werspers = [], [], [], []
       
 
 scoresFile.close()

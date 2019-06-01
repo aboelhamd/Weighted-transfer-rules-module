@@ -1,7 +1,7 @@
 import sys
 
 if (len(sys.argv) != 4) :
-	print('\nUsage: python rem-bad-sents.py source-file ambig-target-file new-source-file');
+	print('\nUsage: python rem-bad-sents.py source-file ambig-target-file(with new lines) new-source-file');
 	sys.exit()
 
 srcFile = open(sys.argv[1], 'r')
@@ -15,10 +15,14 @@ for sent in ambigTarFile:
     sents.append(sent)
 
   else :
-    src = scrFile.readline()
+    src = srcFile.readline()
+    bad = False    
     for sent in sents :
-      if (line.find("#") == -1 and line.find("@") == -1) :
-        newSrcFile.write()
+      if (sent.find("*") > -1 or sent.find("#") > -1 or sent.find("@") > -1) :
+        bad = True
+        break
+    if (not bad) : 
+      newSrcFile.write(src)
     sents.clear()
 
 srcFile.close()
