@@ -1,7 +1,7 @@
 import sys
 
 if (len(sys.argv) != 4) :
-	print('\nUsage: python rem-bad-sents.py source-file ambig-target-file(with new lines) new-source-file');
+	print('\nUsage: python3 rem-bad-sents.py source-file ambig-target-file(with new lines) new-source-file');
 	sys.exit()
 
 srcFile = open(sys.argv[1], 'r')
