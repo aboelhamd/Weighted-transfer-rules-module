@@ -27,21 +27,21 @@ using namespace pugi;
 using namespace elem;
 
 int main(int argc, char **argv) {
-	string lextorFilePath, interInFilePath, localeId, transferFilePath,
+	string lextorFilePath, chunkerFilePath, localeId, transferFilePath,
 			modelsDest, k;
 
 	if (argc == 7) {
 		localeId = argv[1];
 		transferFilePath = argv[2];
 		lextorFilePath = argv[3];
-		interInFilePath = argv[4];
+		chunkerFilePath = argv[4];
 		modelsDest = argv[5];
 		k = argv[6];
 	} else {
 		localeId = "es_ES";
 		transferFilePath = "apertium-eng-spa.spa-eng.t1x";
 		lextorFilePath = "lextor.txt";
-		interInFilePath = "beaminter.txt";
+		chunkerFilePath = "beaminter.txt";
 		modelsDest = "/home/aboelhamd/Downloads/models";
 		k = "8";
 
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 				<< "lextorFilePath : Apertium lextor file for the source language sentences."
 				<< endl;
 		cout
-				<< "interInFilePath : Output file of this program which is the input for apertium interchunk."
+				<< "chunkerFilePath : Output file of this program which is the input for apertium interchunk."
 				<< endl;
 		cout << "modelsDest : Yasmet models merged file destination." << endl;
 		cout << "beamSize : The size of beam in beam search algorithm." << endl;
@@ -75,8 +75,8 @@ int main(int argc, char **argv) {
 	}
 
 	ifstream lextorFile(lextorFilePath.c_str());
-	ofstream interInFile(interInFilePath.c_str());
-	if (lextorFile.is_open() && interInFile.is_open()) {
+	ofstream chunkerFile(chunkerFilePath.c_str());
+	if (lextorFile.is_open() && chunkerFile.is_open()) {
 		// load transfer file in an xml document object
 		xml_document transferDoc;
 		xml_parse_result result = transferDoc.load_file(
@@ -173,10 +173,10 @@ int main(int argc, char **argv) {
 
 			// write the outs
 			for (unsigned j = 0; j < outs.size(); j++)
-				interInFile << outs[j] << endl;
+				chunkerFile << outs[j] << endl;
 
 		}
-		interInFile.close();
+		chunkerFile.close();
 		lextorFile.close();
 	} else {
 		cout << "ERROR in opening files!" << endl;

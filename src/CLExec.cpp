@@ -172,22 +172,41 @@ map<string, map<string, vector<float> > > CLExec::loadYasmetModels(
 			strcpy(lineChar, line.c_str());
 
 			token = strtok(lineChar, ": ");
+//			cout << endl << token << endl;
 			if (token == "file") {
 				model = strtok(NULL, ": ");
 				continue;
 			}
 			// skip rule_num
-			strtok(NULL, ": ");
+			/*cout << model << "  " << */strtok(NULL, ": ") /*<< endl*/;
 //			cout << "rulenum= " << strtok(NULL, ": ") << endl;
 
 			weight = strtok(NULL, ": ");
 //			cout << "weight= " << weight << endl;
 
 			float w = strtof(weight.c_str(), NULL);
+//			cout << weight << " = " << w << endl;
+
 //			cout << w << endl;
 //			if (w < 0)
 //				cout << w << endl;
-			classWeights[model][token].push_back(w);
+//			classWeights[model][token].push_back(w);
+			map<string, map<string, vector<float> > >::iterator it1 =
+					classWeights.find(model);
+			if (it1 == classWeights.end()) {
+				classWeights.insert(
+						pair<string, map<string, vector<float> > >(model,
+								map<string, vector<float> >()));
+				it1=classWeights.find(model);
+			}
+			map<string, vector<float> >::iterator it2 = it1->second.find(token);
+			if (it2 != it1->second.end()) {
+				it2->second.push_back(w);
+			} else {
+				it1->second.insert(
+						pair<string, vector<float> >(token, vector<float>()));
+				it2 = it1->second.find(token);
+			}
 //			if (classWeights[model][token][classWeights[model][token].size() - 1]
 //					< 0)
 //				cout << w << endl;
@@ -351,6 +370,24 @@ void CLExec::beamSearch(
 					newTree[z].second += 1;
 				cout << "word : " << word << "  is not found in dataset : "
 						<< rulesNums << endl;
+
+//				for (map<string, map<string, vector<float> > >::iterator it =
+//						classesWeights.begin(); it != classesWeights.end();
+//						it++) {
+//					cout << "class weightssssssssssssssssss:" << endl;
+//					cout << "model : " << it->first << endl;
+//					for (map<string, vector<float> >::iterator it2 =
+//							it->second.begin(); it2 != it->second.end();
+//							it2++) {
+//						cout << "word : " << it2->first << "  "
+//								<< it2->second.size() << endl;
+//						for (unsigned z = 0; z < it2->second.size(); z++)
+//							cout << it2->second[z] << "  " << endl;
+//						cout << endl << endl;
+//					}
+//				}
+//				return;
+//				cout << "miss" << endl;
 			}
 
 			else {
@@ -363,6 +400,8 @@ void CLExec::beamSearch(
 				}
 				for (unsigned z = 0; z < ambigRulesSize; z++)
 					newTree[z].second += wordWeights[z];
+
+//				cout << "hit" << endl;
 			}
 
 		}
