@@ -9,3 +9,7 @@ maximum entropy models (models with weighted rules), then these models are used 
 The weighted transfer rules module was built to apply only chunker transfer rules (patterns of words).
 And this project is to improve it by modify some of the methods used and then to extend it
 to be applied to interchunk and postchunk transfer rules (patterns of chunks) too.
+
+Further [documentation](https://docs.google.com/document/d/1t0VnUhw_LwN0oNL7Sk1fqSJyPnWdxYElesuIV_htn7o/edit?usp=sharing).
+
+My [proposal](https://docs.google.com/document/d/1u_6S2Ae9YeEbX7yJrDyNTdCQUX02pUXPA83lrKR_Z-g/edit?usp=sharing) to Apertium in Google Summer of Code 2019.
