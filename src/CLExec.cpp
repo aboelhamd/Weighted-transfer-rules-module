@@ -197,8 +197,9 @@ map<string, map<string, vector<float> > > CLExec::loadYasmetModels(
 				classWeights.insert(
 						pair<string, map<string, vector<float> > >(model,
 								map<string, vector<float> >()));
-				it1=classWeights.find(model);
+				it1 = classWeights.find(model);
 			}
+
 			map<string, vector<float> >::iterator it2 = it1->second.find(token);
 			if (it2 != it1->second.end()) {
 				it2->second.push_back(w);
@@ -206,6 +207,7 @@ map<string, map<string, vector<float> > > CLExec::loadYasmetModels(
 				it1->second.insert(
 						pair<string, vector<float> >(token, vector<float>()));
 				it2 = it1->second.find(token);
+				it2->second.push_back(w);
 			}
 //			if (classWeights[model][token][classWeights[model][token].size() - 1]
 //					< 0)
@@ -366,47 +368,24 @@ void CLExec::beamSearch(
 
 			// put weights
 			if (wordWeights.empty()) {
-				for (unsigned z = 0; z < ambigRulesSize; z++)
-					newTree[z].second += 1;
+				wordWeights = vector<float>(ambigRulesSize, 1.0);
 				cout << "word : " << word << "  is not found in dataset : "
 						<< rulesNums << endl;
-
-//				for (map<string, map<string, vector<float> > >::iterator it =
-//						classesWeights.begin(); it != classesWeights.end();
-//						it++) {
-//					cout << "class weightssssssssssssssssss:" << endl;
-//					cout << "model : " << it->first << endl;
-//					for (map<string, vector<float> >::iterator it2 =
-//							it->second.begin(); it2 != it->second.end();
-//							it2++) {
-//						cout << "word : " << it2->first << "  "
-//								<< it2->second.size() << endl;
-//						for (unsigned z = 0; z < it2->second.size(); z++)
-//							cout << it2->second[z] << "  " << endl;
-//						cout << endl << endl;
-//					}
-//				}
-//				return;
-//				cout << "miss" << endl;
 			}
 
-			else {
-				vector<float> tagWeights;
-				for (unsigned t = 0; t < slTags[x].size(); t++) {
-					string tag = slTags[x][t] + num;
-					tagWeights = classWeights[tag];
-					for (unsigned w = 0; w < tagWeights.size(); w++)
-						wordWeights[w] += tagWeights[w];
-				}
-				for (unsigned z = 0; z < ambigRulesSize; z++)
-					newTree[z].second += wordWeights[z];
-
-//				cout << "hit" << endl;
+			vector<float> tagWeights;
+			for (unsigned t = 0; t < slTags[x].size(); t++) {
+				string tag = slTags[x][t] + num;
+				tagWeights = classWeights[tag];
+				for (unsigned w = 0; w < tagWeights.size(); w++)
+					wordWeights[w] += tagWeights[w];
 			}
+			for (unsigned z = 0; z < ambigRulesSize; z++)
+				newTree[z].second += wordWeights[z];
 
 		}
 
-		// expand beamTree
+// expand beamTree
 		unsigned initSize = beamTree->size();
 		for (unsigned z = 0; z < ambigRulesSize - 1; z++) {
 			for (unsigned x = 0; x < initSize; x++) {
@@ -416,7 +395,7 @@ void CLExec::beamSearch(
 			}
 		}
 
-		// merge the two trees
+// merge the two trees
 		for (unsigned z = 0; z < ambigRulesSize; z++) {
 			for (unsigned x = initSize * z; x < initSize * (z + 1); x++) {
 				// put the new rules with the old
@@ -428,10 +407,10 @@ void CLExec::beamSearch(
 			}
 		}
 
-		// sort beam tree
+// sort beam tree
 		sort(beamTree->begin(), beamTree->end(), sortParameter);
 
-		// remove elements more than (beam)
+// remove elements more than (beam)
 		if (beamTree->size() > beam)
 			beamTree->erase(beamTree->begin() + beam, beamTree->end());
 	}
