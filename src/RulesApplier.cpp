@@ -101,9 +101,7 @@ int main(int argc, char **argv) {
 
 	ifstream lextorFile(lextorFilePath.c_str());
 	ofstream chunkerFile(chunkerFilePath.c_str());
-	ofstream newLextorFile;
-	if (!newLextorFilePath.empty())
-		newLextorFile = ofstream(newLextorFilePath.c_str());
+	ofstream newLextorFile(newLextorFilePath.c_str());
 	if (lextorFile.is_open() && chunkerFile.is_open()
 			&& (newLextorFilePath.empty() || newLextorFile.is_open())) {
 		// load transfer file in an xml document object
@@ -135,9 +133,9 @@ int main(int argc, char **argv) {
 			// write to new lextor file
 			newLextorFile << tokenizedSentence << endl;
 
-//	  cout << i++ << endl;
+			// cout << i++ << endl;
 
-// spaces after each token
+			// spaces after each token
 			vector<string> spaces;
 
 			// tokens in the sentence order

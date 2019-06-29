@@ -98,9 +98,7 @@ int main(int argc, char **argv) {
 
 	ifstream lextorFile(lextorFilePath.c_str());
 	ifstream weightOutFile(weightsFilePath.c_str());
-	ifstream targetFile;
-	if (!targetFilePath.empty())
-		targetFile = ifstream(targetFilePath.c_str());
+	ifstream targetFile(targetFilePath.c_str());
 	if (lextorFile.is_open() && weightOutFile.is_open()
 			&& (targetFilePath.empty() || targetFile.is_open())) {
 		// load transfer file in an xml document object
