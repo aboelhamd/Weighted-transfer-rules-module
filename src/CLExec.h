@@ -20,57 +20,28 @@ using namespace pugi;
 class CLExec {
 public:
 
-	static void
-	segmenter(string inFilePath, string outFilePath);
-
-	static void
-	lextor(string inFilePath, string outFilePath);
-
-	static void
-	biltrans(string inFilePath, string outFilePath);
-
-	static void
-	interchunk(string inFilePath, string outFilePath);
-
-	static void
-	postchunk(string inFilePath, string outFilePath);
-
-	static void
-	transfer(string inFilePath, string outFilePath);
-
-	static void
-	assignWeights(string inFilePath, string outFilePath);
-
-	static vector<string>
-	getFilesInDir(string dir);
-
-//  static void
-//  runYasmet ();
-
 	static map<string, map<string, vector<float> > >
 	loadYasmetModels(string modelsDest/*, string *localeid*/);
 
-	static void
-	handleDatasets();
+	static string
+	toLowerCase(string s, string localeId);
 
 	static string
-	toLowerCase(string word, string localeId);
+	toUpperCase(string s, string localeId);
 
 	static string
-	toUpperCase(string word, string localeId);
-
-	static string
-	FirLetUpperCase(string word, string localeId);
+	FirLetUpperCase(string s, string localeId);
 
 	static int
-	compare(string word1, string word2);
+	compare(string s1, string s2);
 
 	static int
-	compareCaseless(string word1, string word2, string localeId);
+	compareCaseless(string s1, string s2, string localeId);
 
 	static void
 	beamSearch(vector<pair<vector<RuleExecution::Node*>, float> > *beamTree,
-			unsigned beam, vector<string> slTokens, vector<vector<string> > slTags,
+			unsigned beam, vector<string> slTokens,
+			vector<vector<string> > slTags,
 			vector<RuleExecution::AmbigInfo*> ambigInfo,
 			map<string, map<string, vector<float> > > classesWeights,
 			string localeId);
