@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
 		cout
 				<< "randModFilePath : Third output file name which is random translations from (language model) for the source language sentences."
 				<< endl;
-//		return -1;
+		return -1;
 	}
 
 	// seed for randomness
@@ -167,25 +167,16 @@ int main(int argc, char **argv) {
 		map<string, string> vars = RuleParser::getVars(transfer);
 		map<string, vector<string> > lists = RuleParser::getLists(transfer);
 
-		if (!analysisFilePath.empty()) {
-			ofstream analysisFile(analysisFilePath.c_str());
-			analysisFile.close();
-		}
-		if (!bestModFilePath.empty()) {
-			ofstream bestModFile(bestModFilePath.c_str());
-			bestModFile.close();
-		}
-		if (!randModFilePath.empty()) {
-			ofstream randModFile(randModFilePath.c_str());
-			randModFile.close();
-		}
+		ofstream analysisFile(analysisFilePath.c_str());
+		ofstream bestModFile(bestModFilePath.c_str());
+		ofstream randModFile(randModFilePath.c_str());
 
 		ifstream weightFile(weightFilePath.c_str());
 		ifstream targetFile(targetFilePath.c_str());
 
-		if (weightFile.is_open() && targetFile.is_open())
+		if (weightFile.is_open() && targetFile.is_open() && (!analysisFilePath.empty()||analysisFile.is_open()) && (!bestModFilePath.empty()||bestModFile.is_open()) && (!randModFilePath.empty()||randModFile.is_open()))
 			for (unsigned i = 0; i < sourceSentences.size(); i++) {
-				cout << i << endl;
+				//cout << i << endl;
 
 				string sourceSentence, tokenizedSentence;
 				sourceSentence = sourceSentences[i];
@@ -283,9 +274,6 @@ int main(int argc, char **argv) {
 
 				// write normal outputs
 				if (!analysisFilePath.empty()) {
-					ofstream analysisFile(analysisFilePath.c_str(),
-							ofstream::app);
-					if (analysisFile.is_open()) {
 						analysisFile << "Analysis of sentence : " << endl;
 						analysisFile << sourceSentence << endl << endl << endl;
 
@@ -323,16 +311,11 @@ int main(int argc, char **argv) {
 								<< "---------------------------------------------------------------------------------------------------------"
 								<< endl << endl;
 
-						analysisFile.close();
-					}
 				}
 
 				// Model weighting
 				// best weight
 				if (!bestModFilePath.empty()) {
-					ofstream bestModFile(bestModFilePath.c_str(),
-							ofstream::app);
-					if (bestModFile.is_open()) {
 						unsigned maxInd = 0;
 						for (unsigned j = 1; j < normWeights.size(); j++) {
 							if (normWeights[j] > normWeights[maxInd])
@@ -341,20 +324,13 @@ int main(int argc, char **argv) {
 
 						// final sentence
 						bestModFile << normTransfers[maxInd] << endl;
-					}
-					bestModFile.close();
 				}
 				if (!randModFilePath.empty()) {
-					// Random weight
-					ofstream randModFile(randModFilePath.c_str(),
-							ofstream::app);
-					if (randModFile.is_open()) {
+					  // Random weight
 						int random = rand() % normWeights.size();
 
 						// final sentence
 						randModFile << normTransfers[random] << endl;
-					}
-					randModFile.close();
 				}
 
 				// delete AmbigInfo pointers
@@ -381,6 +357,9 @@ int main(int argc, char **argv) {
 		else {
 			cout << "ERROR in opening files!" << endl;
 		}
+		analysisFile.close();
+		bestModFile.close();
+		randModFile.close();
 		weightFile.close();
 		targetFile.close();
 	} else {
