@@ -14,15 +14,15 @@ rules_len = int(yasmet.readline())
 # titles for csv file
 line = yasmet.readline()
 words_len = len(re.sub(r"_[0-9]+:[0-9]+", "", line.split("#",3)[1]).strip().split(" "))
-titles = "rule,weight"
+titles = "rule weight"
 for i in range (words_len) :
-  titles += ",word" + str(i+1)
+  titles += " word" + str(i+1)
 sklearn.write(titles+"\n")
 
 while line:
   features = line.split("#",3)[0].replace("$ ", "")
   features += re.sub(r"_[0-9]+:[0-9]+", "", line.split("#",3)[1]).strip()
-  sklearn.write(features.replace(" ",",")+"\n")
+  sklearn.write(features+"\n")
   line = yasmet.readline()
 
 yasmet.close()
