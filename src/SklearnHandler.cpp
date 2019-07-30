@@ -201,8 +201,14 @@ int main(int argc, char **argv) {
 					// write the record
 					predictDataFile << rulesNums << " ";
 					for (unsigned x = ambig->firTokId;
-							x < ambig->firTokId + ambig->maxPat; x++)
+							x < ambig->firTokId + ambig->maxPat; x++) {
+
+						for (unsigned t = 0; t < slTokens[x].size(); t++)
+							if (slTokens[x][t] == ' ')
+								slTokens[x].replace(t, 1, "_");
+
 						predictDataFile << slTokens[x] << " ";
+					}
 					predictDataFile << endl;
 				}
 			// predict mode
