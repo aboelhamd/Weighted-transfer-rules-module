@@ -20,25 +20,49 @@
 #include "TranElemLiterals.h"
 #include "CLExec.h"
 
-#include <omp.h>
-
 using namespace std;
 using namespace pugi;
 using namespace elem;
 
 int main(int argc, char **argv) {
-	string localeId, lextorFilePath, transferFilePath, predictDataPath;
+	string localeId, lextorFilePath, transferFilePath, chunkerFilePath,
+			predictDataFilePath, predictResFilePath;
 
-	if (argc == 5) {
+	int opt;
+	bool g = false, p = false;
+	while ((opt = getopt(argc, argv, ":g:p")) != -1) {
+		switch (opt) {
+		case 'g':
+			predictDataFilePath = optarg;
+			g = true;
+			break;
+		case 'p':
+			predictResFilePath = optarg;
+			p = false;
+			break;
+		case ':':
+			printf("option %c needs a value\n", optopt);
+			return -1;
+		case '?':
+			printf("unknown option: %c\n", optopt);
+			return -1;
+		}
+	}
+
+	if (p && !g && argc - optind == 5) {
 		localeId = argv[1];
 		transferFilePath = argv[2];
 		lextorFilePath = argv[3];
-		predictDataPath = argv[4];
+		chunkerFilePath = argv[4];
+	} else if (g && !p && argc - optind == 4) {
+		localeId = argv[1];
+		transferFilePath = argv[2];
+		lextorFilePath = argv[3];
 	} else {
 		localeId = "es_ES";
 		transferFilePath = "apertium-eng-spa.spa-eng.t1x";
 		lextorFilePath = "lextor.txt";
-		predictDataPath = "predict-data";
+		predictDataFilePath = "predict-data";
 
 //      localeId = "kk_KZ";
 //      transferFilePath = "apertium-kaz-tur.kaz-tur.t1x";
@@ -50,7 +74,7 @@ int main(int argc, char **argv) {
 
 		cout << "Error in parameters !" << endl;
 		cout
-				<< "Parameters are : localeId transferFilePath lextorFilePath interInFilePath"
+				<< "Parameters are : localeId transferFilePath lextorFilePath [(-g predictDataFilePath) || (-p predictResFilePath chunkerFilePath)]"
 				<< endl;
 		cout
 				<< "localeId : ICU locale ID for the source language. For Kazakh => kk_KZ"
@@ -62,13 +86,26 @@ int main(int argc, char **argv) {
 				<< "lextorFilePath : Apertium lextor file for the source language sentences."
 				<< endl;
 		cout
-				<< "predictDataPath : destination to put in the generated sklearn predict data."
+				<< "-g : Data generation mode (expects file destination to put datasets in)."
+				<< endl;
+		cout
+				<< "predictDataFilePath : destination to put in the generated sklearn predict data."
+				<< endl;
+		cout << "-p : Prediction mode (expects prediction results file)."
+				<< endl;
+		cout << "predictResFilePath : File that holds prediction results."
 				<< endl;
 		return -1;
 	}
 
 	ifstream lextorFile(lextorFilePath.c_str());
-	if (lextorFile.is_open()) {
+	ofstream predictDataFile(predictDataFilePath.c_str());
+	ifstream predictResFile(predictResFilePath.c_str());
+	ofstream chunkerFile(chunkerFilePath.c_str());
+	if (lextorFile.is_open()
+			&& (predictDataFilePath.empty() || predictDataFile.is_open())
+			&& (predictResFilePath.empty() || predictResFile.is_open())
+			&& (chunkerFilePath.empty() || chunkerFile.is_open())) {
 		// load transfer file in an xml document object
 		xml_document transferDoc;
 		xml_parse_result result = transferDoc.load_file(
@@ -86,12 +123,12 @@ int main(int argc, char **argv) {
 		map<string, string> vars = RuleParser::getVars(transfer);
 		map<string, vector<string> > lists = RuleParser::getLists(transfer);
 
-//      unsigned i = 0;
+		//      unsigned i = 0;
 		string tokenizedSentence;
 		while (getline(lextorFile, tokenizedSentence)) {
-//	  cout << i << endl;
+			//	  cout << i << endl;
 
-// spaces after each token
+			// spaces after each token
 			vector<string> spaces;
 
 			// tokens in the sentence order
@@ -125,18 +162,12 @@ int main(int argc, char **argv) {
 					tlTokens, tlTags, rulesApplied, attrs, lists, &vars, spaces,
 					localeId);
 
-			// final outputs
-			vector<string> outs;
 			// number of generated combinations
 			unsigned compNum;
 			// nodes for every token and rule
 			map<unsigned, vector<RuleExecution::Node*> > nodesPool;
 			// ambiguous informations
 			vector<RuleExecution::AmbigInfo*> ambigInfo;
-			// beam tree
-			vector<pair<vector<RuleExecution::Node*>, float> > beamTree;
-			// rules combinations
-			vector<vector<RuleExecution::Node*> > combNodes;
 
 			nodesPool = RuleExecution::getNodesPool(tokenRules);
 
@@ -144,9 +175,15 @@ int main(int argc, char **argv) {
 					&compNum);
 
 			vector<RuleExecution::AmbigInfo*> newAmbigInfo;
-			for (unsigned j = 0; j < ambigInfo.size(); j++) {
-				RuleExecution::AmbigInfo* ambig = ambigInfo[j];
-				if (ambigInfo[j]->combinations.size() > 1) {
+			for (unsigned j = 0; j < ambigInfo.size(); j++)
+				if (ambigInfo[j]->combinations.size() > 1)
+					newAmbigInfo.push_back(ambigInfo[j]);
+
+			// generation mode
+			if (g)
+				for (unsigned j = 0; j < newAmbigInfo.size(); j++) {
+					RuleExecution::AmbigInfo* ambig = newAmbigInfo[j];
+
 					string rulesNums;
 					for (unsigned x = 0; x < ambig->combinations.size(); x++) {
 						// avoid dummy node
@@ -161,22 +198,69 @@ int main(int argc, char **argv) {
 						}
 						rulesNums += "+";
 					}
-					// write the outs
-					ofstream dataset(
-							(predictDataPath + string("/") + rulesNums + ".csv").c_str(),
-							ofstream::app);
-
+					// write the record
+					predictDataFile << rulesNums << " ";
 					for (unsigned x = ambig->firTokId;
 							x < ambig->firTokId + ambig->maxPat; x++)
-						dataset << slTokens[x] << " ";
-					dataset << endl;
-
-					dataset.close();
+						predictDataFile << slTokens[x] << " ";
+					predictDataFile << endl;
 				}
+			// predict mode
+			else if (p) {
+				vector<RuleExecution::Node*> finalNodes;
+				unsigned j = 0;
+				for (unsigned x = 0; x < slTokens.size();) {
+					if (x == newAmbigInfo[j]->firTokId) {
+						string line;
+						getline(predictResFile, line);
+						int rule;
+						stringstream buffer(line);
+						buffer >> rule;
+
+						finalNodes.insert(finalNodes.end(),
+								newAmbigInfo[j]->combinations[rule].begin(),
+								newAmbigInfo[j]->combinations[rule].end());
+
+						x += newAmbigInfo[j]->maxPat;
+						j++;
+					} else {
+						finalNodes.push_back(nodesPool[x][0]);
+					}
+				}
+				string out;
+				for (unsigned x = 0; x < finalNodes.size(); x++)
+					out +=
+							ruleOutputs[finalNodes[x]->ruleId][finalNodes[x]->tokenId]
+									+ spaces[finalNodes[x]->tokenId
+											+ finalNodes[x]->patNum - 1];
+
+				chunkerFile << out << endl;
 			}
 
+			// delete AmbigInfo pointers
+			for (unsigned j = 0; j < ambigInfo.size(); j++) {
+				// delete the dummy node pointers
+				set<RuleExecution::Node*> dummies;
+				for (unsigned k = 0; k < ambigInfo[j]->combinations.size(); k++)
+					dummies.insert(ambigInfo[j]->combinations[k][0]);
+				for (set<RuleExecution::Node*>::iterator it = dummies.begin();
+						it != dummies.end(); it++)
+					delete (*it);
+
+				delete ambigInfo[j];
+			}
+			// delete Node pointers
+			for (map<unsigned, vector<RuleExecution::Node*> >::iterator it =
+					nodesPool.begin(); it != nodesPool.end(); it++) {
+				for (unsigned j = 0; j < it->second.size(); j++) {
+					delete it->second[j];
+				}
+			}
 		}
 		lextorFile.close();
+		predictDataFile.close();
+		predictResFile.close();
+		chunkerFile.close();
 	} else {
 		cout << "ERROR in opening files!" << endl;
 	}
