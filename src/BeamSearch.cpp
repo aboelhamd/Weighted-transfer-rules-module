@@ -100,12 +100,12 @@ int main(int argc, char **argv) {
 		stringstream buffer(k);
 		buffer >> beam;
 
-//      unsigned i = 0;
+		//      unsigned i = 0;
 		string tokenizedSentence;
 		while (getline(lextorFile, tokenizedSentence)) {
-//	  cout << i << endl;
+			//	  cout << i << endl;
 
-// spaces after each token
+			// spaces after each token
 			vector<string> spaces;
 
 			// tokens in the sentence order
@@ -174,6 +174,26 @@ int main(int argc, char **argv) {
 			// write the outs
 			for (unsigned j = 0; j < outs.size(); j++)
 				chunkerFile << outs[j] << endl;
+
+			// delete AmbigInfo pointers
+			for (unsigned j = 0; j < ambigInfo.size(); j++) {
+				// delete the dummy node pointers
+				set<RuleExecution::Node*> dummies;
+				for (unsigned k = 0; k < ambigInfo[j]->combinations.size(); k++)
+					dummies.insert(ambigInfo[j]->combinations[k][0]);
+				for (set<RuleExecution::Node*>::iterator it = dummies.begin();
+						it != dummies.end(); it++)
+					delete (*it);
+
+				delete ambigInfo[j];
+			}
+			// delete Node pointers
+			for (map<unsigned, vector<RuleExecution::Node*> >::iterator it =
+					nodesPool.begin(); it != nodesPool.end(); it++) {
+				for (unsigned j = 0; j < it->second.size(); j++) {
+					delete it->second[j];
+				}
+			}
 
 		}
 		chunkerFile.close();
