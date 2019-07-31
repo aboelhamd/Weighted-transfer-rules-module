@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 				<< "newlextorFilePath : write the new sentences lextor in this lextor file."
 				<< endl;
 		cout
-				<< "-n : put newline after each sentence ambiguous chunker (to use it removing bad sentences)."
+				<< "-n : put newline after each sentence ambiguous chunker (to use it in removing bad sentences)."
 				<< endl;
 		return -1;
 	}
