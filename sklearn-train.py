@@ -1,4 +1,5 @@
 import os
+import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -19,7 +20,7 @@ models_path = sys.argv[2]
 
 files = {}
 # r=root, d=directories, f=files
-for r, d, f in os.walk(path):
+for r, d, f in os.walk(dataset_path):
   for file in f:
     files[file]=os.path.join(r, file)
 
@@ -27,9 +28,9 @@ if not os.path.exists(models_path):
   os.makedirs(models_path)
 
 
-# These are the classifiers that permit training data with sample weights!
 for file in files:
 
+# These are the classifiers that permit training data with sample weights!
   models_names = ["NaiveBayes", "LinearSVM", "RBFSVM", "DecisionTree",
        "RandomForest", "AdaBoost"]
 
@@ -44,39 +45,31 @@ for file in files:
   print("file name :", file)
   data = pd.read_csv(files[file], delimiter=r"\s+").dropna()
   
-#     print (data.shape[0] , data.iloc[:,0].nunique())
   # if records equals to classes number, duplicates the data  
   if data.shape[0] == data.iloc[:,0].nunique():
     data = data.append(data)
-#    display(data)
-  
-#    print(data.iloc[:,2:])
 
   # words (features) encoding
   from sklearn.preprocessing import OrdinalEncoder
   enc = OrdinalEncoder(dtype=np.int32)
   features = enc.fit_transform(data.iloc[:,2:])
-  
-  # save the encoder
-  enc_name = models_path+'/'+'encoder'+'-'+file[:-4]
+
+  # save the encoder 
+  enc_name = os.path.join(models_path, 'encoder'+'-'+file[:-4])
   joblib.dump(enc, enc_name)
-#     display(enc.categories_)
-#     display(data.iloc[:,2:],features)
+
   # target and weights
   target = data.iloc[:,0]
   weights = data.iloc[:,1].values
   
-#     print("file name :", file)
   print("Rules(classes) number :",target.nunique())
   print("Words(features) number :",features.shape[1])
-  print("Records number :",features.shape[0], end = '')
-  display(data.iloc[:target.nunique(),:])
+  print("Records number :",features.shape[0])
+  print(data.iloc[:target.nunique(),:] + '\n')
   
   # split to train and test
   X_train, X_test, y_train, y_test, w_train, w_test = \
       train_test_split(features, target, weights, test_size=.5, random_state=0, stratify=target)
-#     display(features, target, weights)
-#     display(X_train, X_test, y_train, y_test, w_train, w_test)
   
   # train models and print their scores
   for name, model in zip(models_names, classifiers):
@@ -86,7 +79,7 @@ for file in files:
     print(" score =", score)
     
     # save models
-    model_name = models_path+'/'+name+'-'+file[:-4]
+    model_name = os.path.join(models_path, name+'-'+file[:-4])
     joblib.dump(model, model_name)
   print("----------------------------------------------\n")
 
