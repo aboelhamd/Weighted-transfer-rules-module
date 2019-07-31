@@ -49,15 +49,17 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	if (p && !g && argc - optind == 5) {
-		localeId = argv[1];
-		transferFilePath = argv[2];
-		lextorFilePath = argv[3];
-		chunkerFilePath = argv[4];
-	} else if (g && !p && argc - optind == 4) {
-		localeId = argv[1];
-		transferFilePath = argv[2];
-		lextorFilePath = argv[3];
+	cout << p << "  " << g << "  " << argc << "  " << optind << endl;
+
+	if (p && !g && argc - optind == 4) {
+		localeId = argv[argc - 4];
+		transferFilePath = argv[argc - 3];
+		lextorFilePath = argv[argc - 2];
+		chunkerFilePath = argv[argc - 1];
+	} else if (g && !p && argc - optind == 3) {
+		localeId = argv[argc - 3];
+		transferFilePath = argv[argc - 2];
+		lextorFilePath = argv[argc - 1];
 	} else {
 		localeId = "es_ES";
 		transferFilePath = "apertium-eng-spa.spa-eng.t1x";
@@ -123,10 +125,10 @@ int main(int argc, char **argv) {
 		map<string, string> vars = RuleParser::getVars(transfer);
 		map<string, vector<string> > lists = RuleParser::getLists(transfer);
 
-		//      unsigned i = 0;
+//		unsigned i = 0;
 		string tokenizedSentence;
 		while (getline(lextorFile, tokenizedSentence)) {
-			//	  cout << i << endl;
+//			cout << i++ << endl;
 
 			// spaces after each token
 			vector<string> spaces;
@@ -207,7 +209,9 @@ int main(int argc, char **argv) {
 							if (slTokens[x][t] == ' ')
 								slTokens[x].replace(t, 1, "_");
 
-						predictDataFile << slTokens[x] << " ";
+						predictDataFile
+								<< CLExec::toLowerCase(slTokens[x], localeId)
+								<< " ";
 					}
 					predictDataFile << endl;
 				}
@@ -231,6 +235,7 @@ int main(int argc, char **argv) {
 						j++;
 					} else {
 						finalNodes.push_back(nodesPool[x][0]);
+						x++;
 					}
 				}
 				string out;
