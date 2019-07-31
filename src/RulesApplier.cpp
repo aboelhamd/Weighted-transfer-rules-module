@@ -126,14 +126,15 @@ int main(int argc, char **argv) {
 		string tokenizedSentence;
 		while (getline(lextorFile, tokenizedSentence)) {
 			allSents++;
-			if (!newLextorFilePath.empty()
-					&& tokenizedSentence.find("^*") != string::npos)
-				continue;
+			if (!newLextorFilePath.empty()) {
+				if (tokenizedSentence.find("^*") != string::npos)
+					continue;
+				// write to new lextor file
+				newLextorFile << tokenizedSentence << endl;
+			}
 			goodSents++;
-			// write to new lextor file
-			newLextorFile << tokenizedSentence << endl;
 
-			// cout << i++ << endl;
+//			cout << allSents << endl;
 
 			// spaces after each token
 			vector<string> spaces;
