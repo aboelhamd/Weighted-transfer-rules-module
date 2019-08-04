@@ -1,4 +1,5 @@
 import os
+import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -30,22 +31,38 @@ output = open(output_path, 'w+')
 for line in data :
   file_name = line.split(' ')[0]
   features = line.split(' ')[1:]
+  
+  file_no_ext = file_name
+  if (file_no_ext.find('.') != -1) :
+    file_no_ext = file_no_ext[:file_no_ext.find('.')]
 
-  # load the features encoder
-  enc = joblib.load(models_path+'/'+'encoder'+'-'+file_name)
+  enc_name = os.path.join(models_path, 'encoder'+'-'+file_no_ext)[:256]
+  if os.path.exists(enc_name) :
+    # load the features encoder
+    enc = joblib.load(enc_name)
 
-  # see if features are seen before or not
-  seen = True
-  for i in range (features) :
-    if features[i] not enc.categories_[i] :
-      seen = False
-      break
+    # see if features are seen before or not
+    seen = True
+    for i in range (features) :
+      if features[i] not in enc.categories_[i] :
+        seen = False
+        break
 
-  if seen :
-    features = enc.transform(features)
-    # load the model
-    loaded_model = joblib.load(models_path+'/'+name+'-'+file_name)
-    output.write(loaded_model.predict([features])+'\n')
+    if seen :
+      # encode words
+      features = enc.transform(features)
+      
+      # load the model
+      model_name = os.path.join(models_path, name+'-'+file_no_ext)[:256]
+      loaded_model = joblib.load(model_name)
+
+      # predict and write in file
+      output.write(loaded_model.predict([features])+'\n')
+
+    else :
+      print("Words : "+features+", are not found in "+file_name)
+      output.write('0\n')
 
   else :
+    print("Model "+file_name+" is not trained yet.")
     output.write('0\n')
