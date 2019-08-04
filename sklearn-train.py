@@ -29,8 +29,11 @@ if not os.path.exists(models_path):
 
 
 for file in files:
+  file_no_ext = file
+  if (file_no_ext.find('.') != -1) :
+    file_no_ext = file_no_ext[:file_no_ext.find('.')]
 
-# These are the classifiers that permit training data with sample weights!
+  # These are the classifiers that permit training data with sample weights!
   models_names = ["NaiveBayes", "LinearSVM", "RBFSVM", "DecisionTree",
        "RandomForest", "AdaBoost"]
 
@@ -55,7 +58,7 @@ for file in files:
   features = enc.fit_transform(data.iloc[:,2:])
 
   # save the encoder 
-  enc_name = os.path.join(models_path, 'encoder'+'-'+file[:-4])
+  enc_name = os.path.join(models_path, 'encoder'+'-'+file_no_ext)
   joblib.dump(enc, enc_name)
 
   # target and weights
@@ -65,7 +68,7 @@ for file in files:
   print("Rules(classes) number :",target.nunique())
   print("Words(features) number :",features.shape[1])
   print("Records number :",features.shape[0])
-  print(data.iloc[:target.nunique(),:] + '\n')
+  print(data.iloc[:target.nunique(),:] , '\n')
   
   # split to train and test
   X_train, X_test, y_train, y_test, w_train, w_test = \
@@ -79,7 +82,6 @@ for file in files:
     print(" score =", score)
     
     # save models
-    model_name = os.path.join(models_path, name+'-'+file[:-4])
+    model_name = os.path.join(models_path, name+'-'+file_no_ext)
     joblib.dump(model, model_name)
   print("----------------------------------------------\n")
-
