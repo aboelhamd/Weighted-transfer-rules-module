@@ -34,19 +34,12 @@ for file in files:
     file_no_ext = file_no_ext[:file_no_ext.find('.')]
 
   # These are the classifiers that permit training data with sample weights!
-  models_names = ["NaiveBayes", "LinearSVM", "RBFSVM", "DecisionTree",
-       "RandomForest", "AdaBoost"]
+  models_names = ["LinearSVM"]
 
-  classifiers = [
-      GaussianNB(),
-      SVC(kernel="linear", C=0.025),
-      SVC(gamma=2, C=1),
-      DecisionTreeClassifier(max_depth=5),
-      RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
-      AdaBoostClassifier()]
+  classifiers = [SVC(kernel="linear", C=0.025)]
   
   print("file name :", file)
-  data = pd.read_csv(files[file], delimiter=r"\s+").dropna()
+  data = pd.read_csv(files[file], delimiter=r"\s+").dropna().iloc[:200000]
   
   # if records equals to classes number, duplicates the data  
   if data.shape[0] == data.iloc[:,0].nunique():
@@ -58,7 +51,7 @@ for file in files:
   features = enc.fit_transform(data.iloc[:,2:])
 
   # save the encoder 
-  enc_name = os.path.join(models_path, 'encoder'+'-'+file_no_ext)
+  enc_name = os.path.join(models_path, 'encoder'+'-'+file_no_ext)[:256]
   joblib.dump(enc, enc_name)
 
   # target and weights
@@ -82,6 +75,6 @@ for file in files:
     print(" score =", score)
     
     # save models
-    model_name = os.path.join(models_path, name+'-'+file_no_ext)
+    model_name = os.path.join(models_path, name+'-'+file_no_ext)[:256]
     joblib.dump(model, model_name)
   print("----------------------------------------------\n")
