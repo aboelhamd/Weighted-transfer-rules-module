@@ -243,9 +243,18 @@ void CLExec::beamSearch(
 			string num = "_" + ss.str();
 
 			// handle the case of two lemmas separated by a space
-			for (unsigned t = 0; t < slTokens[x].size(); t++)
-				if (slTokens[x][t] == ' ')
+			for (unsigned t = 0; t < slTokens[x].size(); t++) {
+				// remove '#' and put '_'
+				if (slTokens[x][t] == '#')
+					if (t + 1 < slTokens[x].length() && slTokens[x][t] == ' ')
+						slTokens[x].replace(t--, 1, "");
+					else
+						slTokens[x].replace(t, 1, "_");
+
+				// remove ' ' and put '_'
+				else if (slTokens[x][t] == ' ')
 					slTokens[x].replace(t, 1, "_");
+			}
 
 			string word = toLowerCase(slTokens[x], localeId) + num;
 			vector<float> wordWeights = classWeights[word];

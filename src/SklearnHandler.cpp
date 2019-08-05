@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
 		while (getline(lextorFile, tokenizedSentence)) {
 //			cout << i++ << endl;
 
-			// spaces after each token
+// spaces after each token
 			vector<string> spaces;
 
 			// tokens in the sentence order
@@ -205,9 +205,19 @@ int main(int argc, char **argv) {
 					for (unsigned x = ambig->firTokId;
 							x < ambig->firTokId + ambig->maxPat; x++) {
 
-						for (unsigned t = 0; t < slTokens[x].size(); t++)
-							if (slTokens[x][t] == ' ')
+						for (unsigned t = 0; t < slTokens[x].size(); t++) {
+							// remove '#' and put '_'
+							if (slTokens[x][t] == '#')
+								if (t + 1 < slTokens[x].length()
+										&& slTokens[x][t] == ' ')
+									slTokens[x].replace(t--, 1, "");
+								else
+									slTokens[x].replace(t, 1, "_");
+
+							// remove ' ' and put '_'
+							else if (slTokens[x][t] == ' ')
 								slTokens[x].replace(t, 1, "_");
+						}
 
 						predictDataFile
 								<< CLExec::toLowerCase(slTokens[x], localeId)

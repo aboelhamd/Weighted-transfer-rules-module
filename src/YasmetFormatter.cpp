@@ -274,9 +274,18 @@ int main(int argc, char **argv) {
 							string word = CLExec::toLowerCase(slTokens[z],
 									localeId);
 
-							for (unsigned c = 0; c < word.length(); c++)
-								if (word[c] == ' ')
+							for (unsigned c = 0; c < word.length(); c++) {
+								// remove '#' and put '_'
+								if (word[c] == '#')
+									if (c + 1 < word.length() && word[c] == ' ')
+										word.replace(c--, 1, "");
+									else
+										word.replace(c, 1, "_");
+
+								// remove ' ' and put '_'
+								else if (word[c] == ' ')
 									word.replace(c, 1, "_");
+							}
 
 							features += " " + word + "_" + num + ":" + label;
 
