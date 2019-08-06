@@ -29,8 +29,9 @@ output = open(output_path, 'w+')
 # ["NaiveBayes", "LinearSVM", "RBFSVM", "DecisionTree", "RandomForest", "AdaBoost"]
 
 for line in data :
-  file_name = line.split(' ')[0]
-  features = line.split(' ')[1:]
+  split = line.split(' ')
+  file_name = split[0]
+  features = split[1:len(split)-1]
   
   file_no_ext = file_name
   if (file_no_ext.find('.') != -1) :
@@ -43,24 +44,27 @@ for line in data :
 
     # see if features are seen before or not
     seen = True
-    for i in range (features) :
+    for i in range (len(features)) :
+      #print(i, features, enc.categories_)
       if features[i] not in enc.categories_[i] :
         seen = False
         break
 
     if seen :
       # encode words
-      features = enc.transform(features)
+      features = enc.transform([features])
       
       # load the model
-      model_name = os.path.join(models_path, name+'-'+file_no_ext)[:256]
-      loaded_model = joblib.load(model_name)
+      name = os.path.join(models_path, model_name+'-'+file_no_ext)[:256]
+      loaded_model = joblib.load(name)
 
       # predict and write in file
-      output.write(loaded_model.predict([features])+'\n')
+      #print('prediction = ', loaded_model.predict(features)[0])
+      output.write(str(loaded_model.predict(features)[0]))
+      output.write('\n')
 
     else :
-      print("Words : "+features+", are not found in "+file_name)
+      print("Words : "+str(features)+", are not found in "+file_name)
       output.write('0\n')
 
   else :
