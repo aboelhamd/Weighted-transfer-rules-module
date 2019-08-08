@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 
 	int opt;
 	bool g = false, p = false;
-	while ((opt = getopt(argc, argv, ":g:p")) != -1) {
+	while ((opt = getopt(argc, argv, ":g:p:")) != -1) {
 		switch (opt) {
 		case 'g':
 			predictDataFilePath = optarg;
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 			break;
 		case 'p':
 			predictResFilePath = optarg;
-			p = false;
+			p = true;
 			break;
 		case ':':
 			printf("option %c needs a value\n", optopt);
@@ -49,13 +49,12 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	cout << p << "  " << g << "  " << argc << "  " << optind << endl;
-
 	if (p && !g && argc - optind == 4) {
 		localeId = argv[argc - 4];
 		transferFilePath = argv[argc - 3];
 		lextorFilePath = argv[argc - 2];
 		chunkerFilePath = argv[argc - 1];
+
 	} else if (g && !p && argc - optind == 3) {
 		localeId = argv[argc - 3];
 		transferFilePath = argv[argc - 2];
@@ -125,45 +124,37 @@ int main(int argc, char **argv) {
 		map<string, string> vars = RuleParser::getVars(transfer);
 		map<string, vector<string> > lists = RuleParser::getLists(transfer);
 
-//		unsigned i = 0;
+		unsigned i = 0;
 		string tokenizedSentence;
 		while (getline(lextorFile, tokenizedSentence)) {
-//			cout << i++ << endl;
+			cout << i++ << endl;
 
-// spaces after each token
+			// spaces after each token
 			vector<string> spaces;
 
 			// tokens in the sentence order
 			vector<string> slTokens, tlTokens;
-
 			// tags of tokens in order
 			vector<vector<string> > slTags, tlTags;
-
 			RuleParser::sentenceTokenizer(&slTokens, &tlTokens, &slTags,
 					&tlTags, &spaces, tokenizedSentence);
-
 			// map of tokens ids and their matched categories
 			map<unsigned, vector<string> > catsApplied;
 
 			RuleParser::matchCats(&catsApplied, slTokens, slTags, transfer);
-
 			// map of matched rules and a pair of first token id and patterns number
 			map<xml_node, vector<pair<unsigned, unsigned> > > rulesApplied;
-
 			RuleParser::matchRules(&rulesApplied, slTokens, catsApplied,
 					transfer);
-
 			// rule and (target) token map to specific output
 			// if rule has many patterns we will choose the first token only
 			map<unsigned, map<unsigned, string> > ruleOutputs;
-
 			// map (target) token to all matched rules ids and the number of pattern items of each rule
 			map<unsigned, vector<pair<unsigned, unsigned> > > tokenRules;
 
 			RuleExecution::ruleOuts(&ruleOutputs, &tokenRules, slTokens, slTags,
 					tlTokens, tlTags, rulesApplied, attrs, lists, &vars, spaces,
 					localeId);
-
 			// number of generated combinations
 			unsigned compNum;
 			// nodes for every token and rule
@@ -172,10 +163,8 @@ int main(int argc, char **argv) {
 			vector<RuleExecution::AmbigInfo*> ambigInfo;
 
 			nodesPool = RuleExecution::getNodesPool(tokenRules);
-
 			RuleExecution::getAmbigInfo(tokenRules, nodesPool, &ambigInfo,
 					&compNum);
-
 			vector<RuleExecution::AmbigInfo*> newAmbigInfo;
 			for (unsigned j = 0; j < ambigInfo.size(); j++)
 				if (ambigInfo[j]->combinations.size() > 1)
@@ -230,15 +219,17 @@ int main(int argc, char **argv) {
 				vector<RuleExecution::Node*> finalNodes;
 				unsigned j = 0;
 				for (unsigned x = 0; x < slTokens.size();) {
-					if (x == newAmbigInfo[j]->firTokId) {
+					if (j < newAmbigInfo.size()
+							&& x == newAmbigInfo[j]->firTokId) {
 						string line;
 						getline(predictResFile, line);
 						int rule;
 						stringstream buffer(line);
 						buffer >> rule;
 
+						// skip dummy node
 						finalNodes.insert(finalNodes.end(),
-								newAmbigInfo[j]->combinations[rule].begin(),
+								newAmbigInfo[j]->combinations[rule].begin() + 1,
 								newAmbigInfo[j]->combinations[rule].end());
 
 						x += newAmbigInfo[j]->maxPat;
@@ -249,12 +240,13 @@ int main(int argc, char **argv) {
 					}
 				}
 				string out;
-				for (unsigned x = 0; x < finalNodes.size(); x++)
+				for (unsigned x = 0; x < finalNodes.size(); x++) {
 					out +=
 							ruleOutputs[finalNodes[x]->ruleId][finalNodes[x]->tokenId]
 									+ spaces[finalNodes[x]->tokenId
 											+ finalNodes[x]->patNum - 1];
 
+				}
 				chunkerFile << out << endl;
 			}
 
