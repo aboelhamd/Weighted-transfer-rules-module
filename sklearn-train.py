@@ -45,10 +45,18 @@ for file in files:
   if data.shape[0] == data.iloc[:,0].nunique():
     data = data.append(data)
 
-  # words (features) encoding
-  from sklearn.preprocessing import OrdinalEncoder
-  enc = OrdinalEncoder(dtype=np.int32)
-  features = enc.fit_transform(data.iloc[:,2:])
+  # words(features) encoding
+  features = data.iloc[:,2:].values
+
+  enc = {}
+  c = 0
+  for i in range (len(features)) :
+    for j in range (len(features[i])) :
+      w = features[i][j]
+      if (w not in enc) :
+        enc[w]=c
+        c=c+1
+      features[i][j]=enc[w]
 
   # save the encoder 
   enc_name = os.path.join(models_path, 'encoder'+'-'+file_no_ext)[:256]
