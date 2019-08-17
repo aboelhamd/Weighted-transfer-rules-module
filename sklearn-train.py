@@ -3,7 +3,7 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from matplotlib.colors import ListedColormap
+import random
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -39,7 +39,7 @@ for file in files:
   classifiers = [SVC(kernel="linear", C=0.025)]
   
   print("file name :", file)
-  data = pd.read_csv(files[file], delimiter=r"\s+").dropna().iloc[:200000]
+  data = pd.read_csv(files[file], delimiter=r"\s+").dropna().iloc[:100000]
   
   # if records equals to classes number, duplicates the data  
   if data.shape[0] == data.iloc[:,0].nunique():
@@ -48,16 +48,24 @@ for file in files:
   # words(features) encoding
   features = data.iloc[:,2:].values
 
+  feat_set = set(features.reshape(-1))
+  feat_list = list(feat_set)
+  # shuffle list
+  random.shuffle(feat_list)
+  feat_set = feat_list
+
   enc = {}
   c = 0
+  for feature in feat_set :
+    enc[feature]=c
+    c=c+1
+
+  onehot = np.zeros((len(features),c), dtype=int)
   for i in range (len(features)) :
     for j in range (len(features[i])) :
       w = features[i][j]
-      if (w not in enc) :
-        enc[w]=c
-        c=c+1
-      features[i][j]=enc[w]
-
+      onehot[i][enc[w]]=1
+  
   # save the encoder 
   enc_name = os.path.join(models_path, 'encoder'+'-'+file_no_ext)[:256]
   joblib.dump(enc, enc_name)
@@ -70,11 +78,11 @@ for file in files:
   print("Words(features) number :",features.shape[1])
   print("Records number :",features.shape[0])
   print(data.iloc[:target.nunique(),:] , '\n')
-  
+
   # split to train and test
   X_train, X_test, y_train, y_test, w_train, w_test = \
-      train_test_split(features, target, weights, test_size=.5, random_state=0, stratify=target)
-  
+      train_test_split(onehot, target, weights, test_size=.5, random_state=0, stratify=target)
+
   # train models and print their scores
   for name, model in zip(models_names, classifiers):
     print("model :", name, ",", end = '')
