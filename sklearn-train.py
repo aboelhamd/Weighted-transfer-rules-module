@@ -46,25 +46,9 @@ for file in files:
     data = data.append(data)
 
   # words(features) encoding
-  features = data.iloc[:,2:].values
-
-  feat_set = set(features.reshape(-1))
-  feat_list = list(feat_set)
-  # shuffle list
-  random.shuffle(feat_list)
-  feat_set = feat_list
-
-  enc = {}
-  c = 0
-  for feature in feat_set :
-    enc[feature]=c
-    c=c+1
-
-  onehot = np.zeros((len(features),c), dtype=int)
-  for i in range (len(features)) :
-    for j in range (len(features[i])) :
-      w = features[i][j]
-      onehot[i][enc[w]]=1
+  from sklearn.preprocessing import OneHotEncoder
+  enc = OneHotEncoder(handle_unknown='ignore')
+  features = enc.fit_transform(data.iloc[:,2:]).toarray()
   
   # save the encoder 
   enc_name = os.path.join(models_path, 'encoder'+'-'+file_no_ext)[:256]
@@ -81,7 +65,7 @@ for file in files:
 
   # split to train and test
   X_train, X_test, y_train, y_test, w_train, w_test = \
-      train_test_split(onehot, target, weights, test_size=.5, random_state=0, stratify=target)
+      train_test_split(features, target, weights, test_size=.5, random_state=0, stratify=target)
 
   # train models and print their scores
   for name, model in zip(models_names, classifiers):
