@@ -216,9 +216,17 @@ int main(int argc, char **argv) {
 			// make a directory if not found
 			mkdir(datasetsPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
+			srand(time(NULL));
+			int random = rand() % ambigInfo.size();
+
 			unsigned weigInd = 0;
 			for (unsigned i = 0; i < ambigInfo.size(); i++) {
 				RuleExecution::AmbigInfo* ambig = ambigInfo[i];
+
+				if (i != random) {
+					weigInd += ambig->combinations.size();
+					continue;
+				}
 
 				// name of the file is the concatenation of rules ids
 				string rulesNums;
