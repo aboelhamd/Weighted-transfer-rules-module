@@ -39,17 +39,17 @@ for file in files:
   classifiers = [SVC(kernel="linear", C=0.025)]
   
   print("file name :", file)
-  data = pd.read_csv(files[file], delimiter=r"\s+").dropna().iloc[:100000]
+  data = pd.read_csv(files[file], delimiter=r"\s+").dropna().iloc[:200000]
   
   # if records equals to classes number, duplicates the data  
   if data.shape[0] == data.iloc[:,0].nunique():
     data = data.append(data)
 
-  # words(features) encoding
-  from sklearn.preprocessing import OneHotEncoder
-  enc = OneHotEncoder(handle_unknown='ignore')
-  features = enc.fit_transform(data.iloc[:,2:]).toarray()
-  
+  # words (features) encoding
+  from sklearn.preprocessing import OrdinalEncoder
+  enc = OrdinalEncoder(dtype=np.int32)
+  features = enc.fit_transform(data.iloc[:,2:])
+
   # save the encoder 
   enc_name = os.path.join(models_path, 'encoder'+'-'+file_no_ext)[:256]
   joblib.dump(enc, enc_name)
