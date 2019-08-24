@@ -147,58 +147,87 @@ void RuleExecution::getOuts(vector<string>* finalOuts,
 		map<unsigned, map<unsigned, string> > ruleOutputs,
 		vector<string> spaces) {
 
-	vector<vector<Node*> > combNodes;
-	combNodes.push_back(vector<Node*>());
-	vector<string> outs;
-	outs.push_back("");
-	unsigned i = 0;
-	for (unsigned j = 0; j < nodesPool.size();) {
-		vector<RuleExecution::Node*> nodes = nodesPool[j];
-
-		if (i < ambigInfo.size() && ambigInfo[i]->firTokId == j) {
-			vector<vector<Node*> > combinations = ambigInfo[i]->combinations;
-
-			combNodes = putCombinations(combNodes, combinations);
-
-			vector<string> ambigOuts;
-
-			for (unsigned k = 0; k < combinations.size(); k++) {
-				string ambigOut;
-				// skip the dummy node
-				for (unsigned l = 1; l < combinations[k].size(); l++) {
-					ambigOut +=
-							ruleOutputs[combinations[k][l]->ruleId][combinations[k][l]->tokenId]
-									+ spaces[combinations[k][l]->tokenId
-											+ combinations[k][l]->patNum - 1];
-				}
-				ambigOuts.push_back(ambigOut);
-			}
-
-			outs = putOuts(outs, ambigOuts);
-
-			j += ambigInfo[i]->maxPat;
-			i++;
-		}
-		// make it else if nodes.size()==1
-		else {
-			putCombination(&combNodes,
-					vector<Node*>(nodes.begin(), nodes.begin() + 1));
-			putOut(&outs, ruleOutputs[nodes[0]->ruleId][nodes[0]->tokenId],
-					nodes[0]->tokenId + nodes[0]->patNum - 1, spaces);
-			j += nodes[0]->patNum;
-		}
+	map<unsigned, AmbigInfo*> ambigMap;
+	for (unsigned i = 0; i < ambigInfo.size(); i++) {
+		ambigMap.insert(
+				pair<unsigned, AmbigInfo*>(ambigInfo[i]->firTokId,
+						ambigInfo[i]));
 	}
 
-	// put only different outputs
-	for (unsigned j = 0; j < outs.size(); j++) {
-		if ((!ambigInfo.empty() && ambigInfo[i]->combinations.size() > 1)
-				|| find(finalOuts->begin(), finalOuts->end(), outs[j])
-						== finalOuts->end()) {
+	for (unsigned i = 0; (i < ambigInfo.size()) || (i < 1); i++) {
+		vector<vector<Node*> > combNodes;
+		combNodes.push_back(vector<Node*>());
+		vector<string> outs;
+		outs.push_back("");
+
+		for (unsigned j = 0; j < nodesPool.size();) {
+			vector<RuleExecution::Node*> nodes = nodesPool[j];
+
+			if (nodes.size() > 1 && ambigMap.count(j)) {
+				vector<vector<Node*> > combinations = ambigMap[j]->combinations;
+
+				if (ambigInfo[i]->firTokId == j) {
+
+					combNodes = putCombinations(combNodes, combinations);
+
+					vector<string> ambigOuts;
+
+					for (unsigned k = 0; k < combinations.size(); k++) {
+						string ambigOut;
+						// skip the dummy node
+						for (unsigned l = 1; l < combinations[k].size(); l++) {
+							ambigOut +=
+									ruleOutputs[combinations[k][l]->ruleId][combinations[k][l]->tokenId]
+											+ spaces[combinations[k][l]->tokenId
+													+ combinations[k][l]->patNum
+													- 1];
+						}
+						ambigOuts.push_back(ambigOut);
+					}
+
+					outs = putOuts(outs, ambigOuts);
+				} else {
+					putCombination(&combNodes,
+							vector<Node*>(combinations[0].begin() + 1,
+									combinations[0].end()));
+					// take the first combination only , while solving the last space issue
+					string ambigOut;
+					// skip the dummy node
+					unsigned l = 1;
+					for (; l < combinations[0].size() - 1; l++) {
+						ambigOut +=
+								ruleOutputs[combinations[0][l]->ruleId][combinations[0][l]->tokenId]
+										+ spaces[combinations[0][l]->tokenId
+												+ combinations[0][l]->patNum - 1];
+					}
+					ambigOut +=
+							ruleOutputs[combinations[0][l]->ruleId][combinations[0][l]->tokenId];
+					putOut(&outs, ambigOut,
+							combinations[0][l]->tokenId
+									+ combinations[0][l]->patNum - 1, spaces);
+				}
+
+				j += ambigMap[j]->maxPat;
+			}
+			// make it else if nodes.size()==1
+			else {
+				putCombination(&combNodes, nodes);
+				putOut(&outs, ruleOutputs[nodes[0]->ruleId][nodes[0]->tokenId],
+						nodes[0]->tokenId + nodes[0]->patNum - 1, spaces);
+				j += nodes[0]->patNum;
+			}
+		}
+
+		// put only different outputs
+		for (unsigned j = 0; j < outs.size(); j++) {
+//			if ((!ambigInfo.empty() && ambigInfo[i]->combinations.size() > 1)
+//					|| find(finalOuts->begin(), finalOuts->end(), outs[j])
+//							== finalOuts->end()) {
 			finalOuts->push_back(outs[j]);
 			finalCombNodes->push_back(combNodes[j]);
+//			}
 		}
 	}
-//	}
 }
 
 void RuleExecution::getCombinations(Node* root, vector<Node*> path,
