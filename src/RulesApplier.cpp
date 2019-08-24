@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
 
 //			cout << allSents << endl;
 
-			// spaces after each token
+// spaces after each token
 			vector<string> spaces;
 
 			// tokens in the sentence order
@@ -185,6 +185,13 @@ int main(int argc, char **argv) {
 
 			RuleExecution::getAmbigInfo(tokenRules, nodesPool, &ambigInfo,
 					&compNum);
+
+			vector<RuleExecution::AmbigInfo*> newAmbigInfo;
+			for (unsigned j = 0; j < ambigInfo.size(); j++)
+				if (ambigInfo[j]->combinations.size() > 1)
+					newAmbigInfo.push_back(ambigInfo[j]);
+			ambigInfo = newAmbigInfo;
+
 			RuleExecution::getOuts(&outs, &combNodes, ambigInfo, nodesPool,
 					ruleOutputs, spaces);
 
