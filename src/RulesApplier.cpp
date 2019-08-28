@@ -26,17 +26,22 @@ using namespace elem;
 
 int main(int argc, char **argv) {
 	string localeId, transferFilePath, lextorFilePath, chunkerFilePath,
-			newLextorFilePath;
+			newLextorFilePath, randomFilePath;
 
-	bool newline = false;
+	unsigned randomSize;
+	bool newline = false, random = false;
 	int opt;
-	while ((opt = getopt(argc, argv, ":u:n")) != -1) {
+	while ((opt = getopt(argc, argv, ":u:r:n")) != -1) {
 		switch (opt) {
 		case 'u':
 			newLextorFilePath = optarg;
 			break;
 		case 'n':
 			newline = true;
+			break;
+		case 'r':
+			random = true;
+			randomSize = atoi(optarg);
 			break;
 		case ':':
 			printf("option %c needs a value\n", optopt);
@@ -47,7 +52,13 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	if (argc - optind == 4) {
+	if (random && argc - optind == 5) {
+		localeId = argv[argc - 5];
+		transferFilePath = argv[argc - 4];
+		lextorFilePath = argv[argc - 3];
+		chunkerFilePath = argv[argc - 2];
+		randomFilePath = argv[argc - 1];
+	} else if (!random && argc - optind == 4) {
 		localeId = argv[argc - 4];
 		transferFilePath = argv[argc - 3];
 		lextorFilePath = argv[argc - 2];
@@ -75,7 +86,7 @@ int main(int argc, char **argv) {
 
 		cout << "Error in parameters !" << endl;
 		cout << "Parameters are : localeId transferFilePath"
-				<< " lextorFilePath chunkerFilePath [-u newlextorFilePath] [-n]"
+				<< " lextorFilePath chunkerFilePath [-u newlextorFilePath] [-n] [-r randomSize randomFilePath]"
 				<< endl;
 		cout
 				<< "localeId : ICU locale ID for the source language. For Kazakh => kk_KZ"
@@ -96,14 +107,21 @@ int main(int argc, char **argv) {
 		cout
 				<< "-n : put newline after each sentence ambiguous chunker (to use it in removing bad sentences)."
 				<< endl;
+		cout << "-r : random pick of ambiguities." << endl;
+		cout << "randomSize : size of random ambiguities." << endl;
+		cout
+				<< "randomFilePath : An output file with random indices to be used by YasmetFromatter."
+				<< endl;
 		return -1;
 	}
 
 	ifstream lextorFile(lextorFilePath.c_str());
 	ofstream chunkerFile(chunkerFilePath.c_str());
 	ofstream newLextorFile(newLextorFilePath.c_str());
+	ofstream randomFile(randomFilePath.c_str());
 	if (lextorFile.is_open() && chunkerFile.is_open()
-			&& (newLextorFilePath.empty() || newLextorFile.is_open())) {
+			&& (newLextorFilePath.empty() || newLextorFile.is_open())
+			&& (randomFilePath.empty() || randomFile.is_open())) {
 		// load transfer file in an xml document object
 		xml_document transferDoc;
 		xml_parse_result result = transferDoc.load_file(
@@ -134,9 +152,9 @@ int main(int argc, char **argv) {
 			}
 			goodSents++;
 
-//			cout << allSents << endl;
+			//			cout << allSents << endl;
 
-// spaces after each token
+			// spaces after each token
 			vector<string> spaces;
 
 			// tokens in the sentence order
