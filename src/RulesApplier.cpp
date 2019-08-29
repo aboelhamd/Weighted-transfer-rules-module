@@ -13,6 +13,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sstream>
+#include <algorithm>
 
 #include "../pugixml/pugixml.hpp"
 #include "RuleParser.h"
@@ -115,6 +116,9 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
+	// seed for randomness
+	srand(time(NULL));
+
 	ifstream lextorFile(lextorFilePath.c_str());
 	ofstream chunkerFile(chunkerFilePath.c_str());
 	ofstream newLextorFile(newLextorFilePath.c_str());
@@ -213,9 +217,19 @@ int main(int argc, char **argv) {
 			RuleExecution::getOuts(&outs, &combNodes, ambigInfo, nodesPool,
 					ruleOutputs, spaces);
 
+			// random indices
+			vector<unsigned> randInd;
+			while (randInd.size() < randomSize && randInd.size() < outs.size()) {
+				unsigned rnd = rand() % outs.size();
+				if (find(randInd.begin(), randInd.end(), rnd) == randInd.end())
+					randInd.push_back(rnd);
+			}
+
 			// write the outs
-			for (unsigned j = 0; j < outs.size(); j++) {
-				chunkerFile << outs[j] << endl;
+			randomFile << randInd.size() << endl;
+			for (unsigned j = 0; j < randInd.size(); j++) {
+				chunkerFile << outs[randInd[j]] << endl;
+				randomFile << randInd[j] << endl;
 			}
 			if (newline)
 				chunkerFile << endl;
