@@ -208,29 +208,38 @@ int main(int argc, char **argv) {
 			RuleExecution::getAmbigInfo(tokenRules, nodesPool, &ambigInfo,
 					&compNum);
 
+			// remove ambiguities with combinations size = 1
 			vector<RuleExecution::AmbigInfo*> newAmbigInfo;
 			for (unsigned j = 0; j < ambigInfo.size(); j++)
 				if (ambigInfo[j]->combinations.size() > 1)
 					newAmbigInfo.push_back(ambigInfo[j]);
 			ambigInfo = newAmbigInfo;
 
-			RuleExecution::getOuts(&outs, &combNodes, ambigInfo, nodesPool,
-					ruleOutputs, spaces);
-
 			// random indices
 			vector<unsigned> randInd;
-			while (randInd.size() < randomSize && randInd.size() < outs.size()) {
-				unsigned rnd = rand() % outs.size();
+			while (randInd.size() < randomSize
+					&& randInd.size() < ambigInfo.size()) {
+				unsigned rnd = rand() % ambigInfo.size();
 				if (find(randInd.begin(), randInd.end(), rnd) == randInd.end())
 					randInd.push_back(rnd);
 			}
 
-			// write the outs
+			// choose random ambiguities
+			newAmbigInfo.clear();
 			randomFile << randInd.size() << endl;
 			for (unsigned j = 0; j < randInd.size(); j++) {
-				chunkerFile << outs[randInd[j]] << endl;
 				randomFile << randInd[j] << endl;
+				newAmbigInfo.push_back(ambigInfo[randInd[j]]);
 			}
+			ambigInfo = newAmbigInfo;
+
+			RuleExecution::getOuts(&outs, &combNodes, ambigInfo, nodesPool,
+					ruleOutputs, spaces);
+
+			// write the outs
+			for (unsigned j = 0; j < outs.size(); j++)
+				chunkerFile << outs[j] << endl;
+
 			if (newline)
 				chunkerFile << endl;
 
