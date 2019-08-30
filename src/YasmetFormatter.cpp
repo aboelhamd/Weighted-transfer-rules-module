@@ -26,17 +26,20 @@ using namespace elem;
 
 int main(int argc, char **argv) {
 	string localeId, transferFilePath, lextorFilePath, targetFilePath,
-			weightsFilePath, datasetsPath;
+			weightsFilePath, datasetsPath, randomFilePath;
 
 	bool tagsFeats = false;
 	int opt;
-	while ((opt = getopt(argc, argv, ":r:t")) != -1) {
+	while ((opt = getopt(argc, argv, ":u:r:t")) != -1) {
 		switch (opt) {
 		case 't':
 			tagsFeats = true;
 			break;
-		case 'r':
+		case 'u':
 			targetFilePath = optarg;
+			break;
+		case 'r':
+			randomFilePath = optarg;
 			break;
 		case ':':
 			printf("option %c needs a value\n", optopt);
@@ -72,7 +75,7 @@ int main(int argc, char **argv) {
 
 		cout << "Error in parameters !" << endl;
 		cout << "Parameters are : localeId transferFilePath lextorFilePath"
-				<< " weightOutFilePath datasetsPath [-r targetFilePath] [-t]"
+				<< " weightOutFilePath datasetsPath [-u targetFilePath] [-t] [-r randomFilePath]"
 				<< endl;
 		cout
 				<< "localeId : ICU locale ID for the source language. For Kazakh => kk_KZ"
@@ -89,18 +92,23 @@ int main(int argc, char **argv) {
 		cout
 				<< "datasetsPath : Datasets destination to put in the generated yasmet files."
 				<< endl;
-		cout << "-r : Remove \"bad\" sentences (with # or @)." << endl;
+		cout << "-u : Remove \"bad\" sentences (with # or @)." << endl;
 		cout << "targetFilePath : Target file path for these sentences."
 				<< endl;
 		cout << "-t : Tags as features in yasmet." << endl;
+		cout << "-r : Random pick of ambiguities (rule coverage)." << endl;
+		cout << "randomFilePath : random indices generated in RulesApplier."
+				<< endl;
 		return -1;
 	}
 
 	ifstream lextorFile(lextorFilePath.c_str());
 	ifstream weightOutFile(weightsFilePath.c_str());
 	ifstream targetFile(targetFilePath.c_str());
+	ifstream randomFile(randomFilePath.c_str());
 	if (lextorFile.is_open() && weightOutFile.is_open()
-			&& (targetFilePath.empty() || targetFile.is_open())) {
+			&& (targetFilePath.empty() || targetFile.is_open())
+			&& (randomFilePath.empty() || randomFile.is_open())) {
 		// load transfer file in an xml document object
 		xml_document transferDoc;
 		xml_parse_result result = transferDoc.load_file(
@@ -157,8 +165,6 @@ int main(int argc, char **argv) {
 					tlTokens, tlTags, rulesApplied, attrs, lists, &vars, spaces,
 					localeId);
 
-			// final outs
-			vector<string> outs;
 			// number of generated combinations
 			unsigned compNum;
 			// nodes for every token and rule
@@ -173,23 +179,43 @@ int main(int argc, char **argv) {
 			RuleExecution::getAmbigInfo(tokenRules, nodesPool, &ambigInfo,
 					&compNum);
 
-			RuleExecution::getOuts(&outs, &combNodes, ambigInfo, nodesPool,
-					ruleOutputs, spaces);
-
+			// remove ambiguities with combinations size = 1
 			vector<RuleExecution::AmbigInfo*> newAmbigInfo;
 			for (unsigned j = 0; j < ambigInfo.size(); j++)
 				if (ambigInfo[j]->combinations.size() > 1)
 					newAmbigInfo.push_back(ambigInfo[j]);
 			ambigInfo = newAmbigInfo;
 
-			// remove bad sentences with (*,#,@)
 			string line;
+			// random indices
+			if (!randomFilePath.empty()) {
+				getline(randomFile, line);
 
+				unsigned randSize = atoi(line.c_str()), rnd;
+
+				// choose random ambiguities
+				newAmbigInfo.clear();
+				while (randSize--) {
+					getline(randomFile, line);
+					rnd = atoi(line.c_str());
+
+					newAmbigInfo.push_back(ambigInfo[rnd]);
+				}
+				ambigInfo = newAmbigInfo;
+			}
+
+			// combinations size
+			unsigned outsSize = 0;
+			for (unsigned j = 0; j < ambigInfo.size(); j++)
+				outsSize += ambigInfo[j]->combinations.size();
+
+			if (!outsSize)
+				outsSize = 1;
+
+			// remove bad sentences with (*,#,@)
 			bool isBad = false;
-			for (unsigned j = 0; j < outs.size(); j++) {
+			for (unsigned j = 0; j < outsSize; j++) {
 				getline(targetFile, line);
-//				cout << line << "  " << line.find('#') << "  " << line.find('@')
-//						<< endl;
 				if (line.find('#') != string::npos
 						|| line.find('@') != string::npos) {
 					isBad = true;
@@ -199,7 +225,7 @@ int main(int argc, char **argv) {
 
 			// read weights
 			vector<float> weights;
-			for (unsigned j = 0; j < outs.size(); j++) {
+			for (unsigned j = 0; j < outsSize; j++) {
 				getline(weightOutFile, line);
 				float weight = strtof(line.c_str(), NULL);
 				weights.push_back(weight);
@@ -216,17 +242,9 @@ int main(int argc, char **argv) {
 			// make a directory if not found
 			mkdir(datasetsPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
-			srand(time(NULL));
-			int random = rand() % ambigInfo.size();
-
 			unsigned weigInd = 0;
 			for (unsigned i = 0; i < ambigInfo.size(); i++) {
 				RuleExecution::AmbigInfo* ambig = ambigInfo[i];
-
-				if (i != random) {
-					weigInd += ambig->combinations.size();
-					continue;
-				}
 
 				// name of the file is the concatenation of rules ids
 				string rulesNums;
@@ -307,6 +325,7 @@ int main(int argc, char **argv) {
 					dataset << features << endl;
 				}
 				weigInd += ambig->combinations.size();
+
 				dataset.close();
 			}
 
