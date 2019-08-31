@@ -267,6 +267,7 @@ int main(int argc, char **argv) {
 		lextorFile.close();
 		chunkerFile.close();
 		newLextorFile.close();
+		randomFile.close();
 
 		cout << "There are " << goodSents << " good sentences from " << allSents
 				<< endl;

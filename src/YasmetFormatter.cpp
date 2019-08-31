@@ -352,6 +352,8 @@ int main(int argc, char **argv) {
 		}
 		lextorFile.close();
 		weightOutFile.close();
+		targetFile.close();
+		randomFile.close();
 
 		cout << "There are " << goodSents << " good sentences from " << allSents
 				<< endl;
