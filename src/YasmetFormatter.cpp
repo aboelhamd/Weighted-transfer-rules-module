@@ -49,7 +49,6 @@ int main(int argc, char **argv) {
 			return -1;
 		}
 	}
-
 	if (argc - optind == 5) {
 		localeId = argv[argc - 5];
 		transferFilePath = argv[argc - 4];
@@ -203,7 +202,6 @@ int main(int argc, char **argv) {
 				}
 				ambigInfo = newAmbigInfo;
 			}
-
 			// combinations size
 			unsigned outsSize = 0;
 			for (unsigned j = 0; j < ambigInfo.size(); j++)
@@ -216,10 +214,9 @@ int main(int argc, char **argv) {
 			bool isBad = false;
 			for (unsigned j = 0; j < outsSize; j++) {
 				getline(targetFile, line);
-				if (line.find('#') != string::npos
+				if (!isBad || line.find('#') != string::npos
 						|| line.find('@') != string::npos) {
 					isBad = true;
-					break;
 				}
 			}
 
