@@ -21,8 +21,9 @@
 #include <algorithm>
 #include <cfloat>
 #include <sstream>
-#include <apertium-3.5/apertium/string_utils.h>
-#include <apertium-3.5/apertium/utf_converter.h>
+#include <unicode/unistr.h>
+#include <unicode/ustream.h>
+#include <unicode/locid.h>
 
 #include "CLExec.h"
 #include "TranElemLiterals.h"
@@ -120,49 +121,59 @@ map<string, map<string, vector<float> > > CLExec::loadYasmetModels(
 	return classWeights;
 }
 
-string CLExec::toLowerCase(string s, string localeId) {
-	wstring ws = UtfConverter::fromUtf8(s);
-	ws = StringUtils::tolower(ws);
-	s = UtfConverter::toUtf8(ws);
-
-	return s;
+string
+CLExec::toLowerCase (string word, string localeId)
+{
+  icu::UnicodeString uString (word.c_str ());
+  string lowWord;
+  uString.toLower (localeId.c_str ()).toUTF8String (lowWord);
+  return lowWord;
 }
 
-string CLExec::toUpperCase(string s, string localeId) {
-	wstring ws = UtfConverter::fromUtf8(s);
-	ws = StringUtils::toupper(ws);
-	s = UtfConverter::toUtf8(ws);
-
-	return s;
+string
+CLExec::toUpperCase (string word, string localeId)
+{
+  icu::UnicodeString uString (word.c_str ());
+  string upWord;
+  uString.toUpper (localeId.c_str ()).toUTF8String (upWord);
+  return upWord;
 }
 
-string CLExec::FirLetUpperCase(string s, string localeId) {
-	wstring ws = UtfConverter::fromUtf8(s);
-	ws = StringUtils::tolower(ws);
-	ws[0] = (wchar_t) towupper(ws[0]);
-	s = UtfConverter::toUtf8(ws);
+string
+CLExec::FirLetUpperCase (string word, string localeId)
+{
+  icu::UnicodeString uString (word.c_str ());
+  uString.toLower (localeId.c_str ());
+  uString.setCharAt (
+      0, icu::UnicodeString (uString.charAt (0)).toUpper (localeId.c_str ()).charAt (0));
 
-	return s;
+  string upWord;
+  uString.toUTF8String (upWord);
+  return upWord;
 }
 
 // The result of bitwise character comparison: 0 if this contains
 // the same characters as text, -1 if the characters in this are
 // bitwise less than the characters in text, +1 if the characters
 // in this are bitwise greater than the characters in text.
-int CLExec::compare(string s1, string s2) {
-	wstring ws1 = UtfConverter::fromUtf8(s1);
-	wstring ws2 = UtfConverter::fromUtf8(s2);
+int
+CLExec::compare (string word1, string word2)
+{
+  icu::UnicodeString uString1 (word1.c_str ());
+  icu::UnicodeString uString2 (word2.c_str ());
 
-	return ws1.compare(ws2);
+  return uString1.compare (uString2);
 }
 
-int CLExec::compareCaseless(string s1, string s2, string localeId) {
-	wstring ws1 = UtfConverter::fromUtf8(s1);
-	ws1 = StringUtils::tolower(ws1);
-	wstring ws2 = UtfConverter::fromUtf8(s2);
-	ws2 = StringUtils::tolower(ws2);
+int
+CLExec::compareCaseless (string word1, string word2, string localeId)
+{
+  icu::UnicodeString uString1 (word1.c_str ());
+  uString1.toLower (localeId.c_str ());
+  icu::UnicodeString uString2 (word2.c_str ());
+  uString2.toLower (localeId.c_str ());
 
-	return ws1.compare(ws2);
+  return uString1.compare (uString2);
 }
 
 // to sort translations from best to worth by their weight

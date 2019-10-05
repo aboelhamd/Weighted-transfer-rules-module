@@ -24,19 +24,19 @@ public:
 	loadYasmetModels(string modelsDest/*, string *localeid*/);
 
 	static string
-	toLowerCase(string s, string localeId);
+  toLowerCase (string word, string localeId);
 
-	static string
-	toUpperCase(string s, string localeId);
+  static string
+  toUpperCase (string word, string localeId);
 
-	static string
-	FirLetUpperCase(string s, string localeId);
+  static string
+  FirLetUpperCase (string word, string localeId);
 
-	static int
-	compare(string s1, string s2);
+  static int
+  compare (string word1, string word2);
 
-	static int
-	compareCaseless(string s1, string s2, string localeId);
+  static int
+  compareCaseless (string word1, string word2, string localeId);
 
 	static void
 	beamSearch(vector<pair<vector<RuleExecution::Node*>, float> > *beamTree,
