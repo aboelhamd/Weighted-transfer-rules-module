@@ -172,12 +172,10 @@ int main(int argc, char **argv) {
 
 			// map of tokens ids and their matched categories
 			map<unsigned, vector<string> > catsApplied;
-
 			RuleParser::matchCats(&catsApplied, slTokens, slTags, transfer);
 
 			// map of matched rules and a pair of first token id and patterns number
 			map<xml_node, vector<pair<unsigned, unsigned> > > rulesApplied;
-
 			RuleParser::matchRules(&rulesApplied, slTokens, catsApplied,
 					transfer);
 
@@ -187,7 +185,6 @@ int main(int argc, char **argv) {
 
 			// map (target) token to all matched rules ids and the number of pattern items of each rule
 			map<unsigned, vector<pair<unsigned, unsigned> > > tokenRules;
-
 			RuleExecution::ruleOuts(&ruleOutputs, &tokenRules, slTokens, slTags,
 					tlTokens, tlTags, rulesApplied, attrs, lists, &vars, spaces,
 					localeId);
@@ -202,37 +199,35 @@ int main(int argc, char **argv) {
 
 			// rules combinations
 			vector<vector<RuleExecution::Node*> > combNodes;
-
 			nodesPool = RuleExecution::getNodesPool(tokenRules);
-
 			RuleExecution::getAmbigInfo(tokenRules, nodesPool, &ambigInfo,
 					&compNum);
-
 			// remove ambiguities with combinations size = 1
 			vector<RuleExecution::AmbigInfo*> newAmbigInfo;
 			for (unsigned j = 0; j < ambigInfo.size(); j++)
 				if (ambigInfo[j]->combinations.size() > 1)
 					newAmbigInfo.push_back(ambigInfo[j]);
-			ambigInfo = newAmbigInfo;
+			ambigInfo = vector<RuleExecution::AmbigInfo*>(newAmbigInfo);
+			if (random) {
+				// random indices
+				vector<unsigned> randInd;
+				while (randInd.size() < randomSize
+						&& randInd.size() < ambigInfo.size()) {
+					unsigned rnd = rand() % ambigInfo.size();
+					if (find(randInd.begin(), randInd.end(), rnd)
+							== randInd.end())
+						randInd.push_back(rnd);
+				}
 
-			// random indices
-			vector<unsigned> randInd;
-			while (randInd.size() < randomSize
-					&& randInd.size() < ambigInfo.size()) {
-				unsigned rnd = rand() % ambigInfo.size();
-				if (find(randInd.begin(), randInd.end(), rnd) == randInd.end())
-					randInd.push_back(rnd);
+				// choose random ambiguities
+				newAmbigInfo.clear();
+				randomFile << randInd.size() << endl;
+				for (unsigned j = 0; j < randInd.size(); j++) {
+					randomFile << randInd[j] << endl;
+					newAmbigInfo.push_back(ambigInfo[randInd[j]]);
+				}
+				ambigInfo = newAmbigInfo;
 			}
-
-			// choose random ambiguities
-			newAmbigInfo.clear();
-			randomFile << randInd.size() << endl;
-			for (unsigned j = 0; j < randInd.size(); j++) {
-				randomFile << randInd[j] << endl;
-				newAmbigInfo.push_back(ambigInfo[randInd[j]]);
-			}
-			ambigInfo = newAmbigInfo;
-
 			RuleExecution::getOuts(&outs, &combNodes, ambigInfo, nodesPool,
 					ruleOutputs, spaces);
 
