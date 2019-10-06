@@ -11,12 +11,13 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.externals import joblib
 
-if (len(sys.argv) != 3) :
-	print('\nUsage: python3 sklearn-train.py datasets_path models_path');
+if (len(sys.argv) != 4) :
+	print('\nUsage: python3 sklearn-train.py datasets_path models_path svm_kernel\n\nsvm_kernel: one of linear, poly, rbf, sigmoid');
 	sys.exit()
 
 dataset_path = sys.argv[1]
 models_path = sys.argv[2]
+svm_kernel = sys.argv[3]
 
 files = {}
 # r=root, d=directories, f=files
@@ -34,9 +35,9 @@ for file in files:
     file_no_ext = file_no_ext[:file_no_ext.find('.')]
 
   # These are the classifiers that permit training data with sample weights!
-  models_names = ["LinearSVM"]
+  models_names = [svm_kernel]
 
-  classifiers = [SVC(kernel="linear", C=0.025)]
+  classifiers = [SVC(kernel=svm_kernel)]
   
   print("file name :", file)
   data = pd.read_csv(files[file], delimiter=r"\s+").dropna().iloc[:200000]
@@ -52,6 +53,8 @@ for file in files:
 
   # save the encoder 
   enc_name = os.path.join(models_path, 'encoder'+'-'+file_no_ext)[:256]
+  if os.path.exists(enc_name):
+    continue  
   joblib.dump(enc, enc_name)
 
   # target and weights
