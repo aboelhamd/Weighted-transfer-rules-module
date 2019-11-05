@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC, LinearSVR
+from sklearn.svm import SVC, LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -12,7 +12,7 @@ from sklearn.externals import joblib
 from sklearn.preprocessing import OrdinalEncoder
 
 if (len(sys.argv) != 5) :
-	print('\nUsage: python3 sklearn-predict.py data_file models_path model_name output_file\n\model_name: one of linear, poly, rbf, sigmoid, or linearsvr "which trains an OVA linear model".');
+	print('\nUsage: python3 sklearn-predict.py data_file models_path model_name output_file\n\model_name: one of linear, poly, rbf, sigmoid, or linearsvc "which trains an OVA linear model".');
 	sys.exit()
 
 data_path = sys.argv[1]

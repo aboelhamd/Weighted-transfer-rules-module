@@ -5,14 +5,14 @@ import pandas as pd
 import numpy as np
 import random
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC, LinearSVR
+from sklearn.svm import SVC, LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.externals import joblib
 
 if (len(sys.argv) != 4) :
-	print('\nUsage: python3 sklearn-train.py datasets_path models_path svm_kernel\n\nsvm_kernel: one of linear, poly, rbf, sigmoid, or linearsvr "which trains an OVA linear model".');
+	print('\nUsage: python3 sklearn-train.py datasets_path models_path svm_kernel\n\nsvm_kernel: one of linear, poly, rbf, sigmoid, or linearsvc "which trains an OVA linear model".');
 	sys.exit()
 
 dataset_path = sys.argv[1]
@@ -37,8 +37,8 @@ for file in files:
   # These are the classifiers that permit training data with sample weights!
   models_names = [svm_kernel]
   
-  if svm_kernel == 'linearsvr' :
-    classifiers = [LinearSVR()]
+  if svm_kernel == 'linearsvc' :
+    classifiers = [LinearSVC()]
   else :
     classifiers = [SVC(kernel=svm_kernel)]
 
