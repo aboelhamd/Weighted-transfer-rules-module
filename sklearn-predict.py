@@ -12,7 +12,7 @@ from sklearn.externals import joblib
 from sklearn.preprocessing import OrdinalEncoder
 
 if (len(sys.argv) != 5) :
-	print('\nUsage: python3 sklearn-predict.py data_file models_path model_name output_file');
+	print('\nUsage: python3 sklearn-predict.py data_file models_path model_name output_file\n\model_name: one of linear, poly, rbf, sigmoid, or linearsvr "which trains an OVA linear model".');
 	sys.exit()
 
 data_path = sys.argv[1]

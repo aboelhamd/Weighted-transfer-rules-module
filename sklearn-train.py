@@ -12,7 +12,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.externals import joblib
 
 if (len(sys.argv) != 4) :
-	print('\nUsage: python3 sklearn-train.py datasets_path models_path svm_kernel\n\nsvm_kernel: one of linear, poly, rbf, sigmoid');
+	print('\nUsage: python3 sklearn-train.py datasets_path models_path svm_kernel\n\nsvm_kernel: one of linear, poly, rbf, sigmoid, or linearsvr "which trains an OVA linear model".');
 	sys.exit()
 
 dataset_path = sys.argv[1]
