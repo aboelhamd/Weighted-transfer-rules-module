@@ -17,7 +17,7 @@ if (len(sys.argv) != 4) :
 
 dataset_path = sys.argv[1]
 models_path = sys.argv[2]
-svm_kernel = sys.argv[3]
+svm_kernel = sys.argv[3].casefold()
 
 files = {}
 # r=root, d=directories, f=files
@@ -36,13 +36,16 @@ for file in files:
 
   # These are the classifiers that permit training data with sample weights!
   models_names = [svm_kernel]
-
-  classifiers = [SVC(kernel=svm_kernel)]
   
+  if svm_kernel == 'linearsvr' :
+    classifiers = [LinearSVR()]
+  else :
+    classifiers = [SVC(kernel=svm_kernel)]
+
   print("file name :", file)
   data = pd.read_csv(files[file], delimiter=r"\s+").dropna().iloc[:200000]
   
-  # if records equals to classes number, duplicates the data  
+  # if records equals to classes number, duplicates the data
   if data.shape[0] == data.iloc[:,0].nunique():
     data = data.append(data)
 

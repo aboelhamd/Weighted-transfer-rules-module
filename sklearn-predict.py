@@ -3,7 +3,6 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from matplotlib.colors import ListedColormap
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -18,7 +17,7 @@ if (len(sys.argv) != 5) :
 
 data_path = sys.argv[1]
 models_path = sys.argv[2]
-model_name = sys.argv[3]
+model_name = sys.argv[3].casefold()
 output_path = sys.argv[4]
 
 data = open(data_path, 'r')
